@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>El Castillo Rosa</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Agenda tu cita en El Castillo Rosa Nails Studio, Rivera, Huila. Uñas, cejas y pestañas.">
+<link rel="icon" href="img/logo-web.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Marcellus&family=Pinyon+Script&display=swap">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .wrap { max-width: 880px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  /* ---------- encabezado ---------- */
+  .hero { background: linear-gradient(180deg, var(--linen), var(--bg)); border-bottom: 1px solid var(--line); }
+  .hero .wrap { display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: center; padding-block: 26px 22px; }
+  .hero img { width: 112px; height: auto; display: block; }
+  .brand { font-family: var(--f-script); font-size: clamp(40px, 9vw, 58px); line-height: 1; color: var(--ink); }
+  .brand-sub { font-family: var(--f-display); letter-spacing: .42em; font-size: 12.5px; color: var(--accent); margin-top: 6px; text-transform: uppercase; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; font-size: 13.5px; color: var(--muted); }
+  .hero-meta a { text-decoration: none; border-bottom: 1px solid var(--line); }
+  @media (max-width: 520px) { .hero .wrap { grid-template-columns: 1fr; justify-items: center; text-align: center; } .hero-meta { justify-content: center; } .hero img { width: 104px; } }
+
+  /* ---------- pasos ---------- */
+  .steps { display: flex; gap: 6px; margin: 22px 0 18px; overflow-x: auto; scrollbar-width: none; }
+  .steps::-webkit-scrollbar { display: none; }
+  .step { flex: 1 0 auto; white-space: nowrap; display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); padding: 8px 12px 8px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); }
+  .step b { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-weight: 500; font-size: 12px; background: var(--linen); }
+  .step.on { color: var(--ink); border-color: var(--accent); }
+  .step.on b { background: var(--ink); color: var(--bg); }
+  .step.done b { background: var(--accent); color: var(--accent-ink); }
+  h2.title { font-size: clamp(24px, 5vw, 30px); }
+  .lead { color: var(--muted); margin-top: 4px; }
+  main { padding-bottom: 140px; }
+  .panel { display: grid; gap: 22px; }
+
+  /* servicios */
+  .cat-title { display: flex; align-items: baseline; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 6px; margin-bottom: 10px; }
+  .cat-title h3 { font-size: 19px; }
+  .svc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+  .svc { position: relative; display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--line); border-radius: var(--r);
+    background: var(--surface); cursor: pointer; text-align: left; transition: border-color .15s, box-shadow .15s; }
+  .svc:hover { border-color: var(--beige); }
+  .svc[aria-pressed="true"] { border-color: var(--ink); box-shadow: var(--shadow); }
+  .svc .ph { width: 64px; height: 64px; border-radius: 10px; object-fit: cover; background: var(--linen); display: grid; place-items: center; font-family: var(--f-script); font-size: 30px; color: var(--accent); }
+  .svc > span:nth-of-type(2) { min-width: 0; padding-right: 18px; }
+  .svc .nm { display: block; font-weight: 500; line-height: 1.25; }
+  .svc .mt { display: block; font-size: 13px; color: var(--muted); margin-top: 3px; }
+  .svc .pr { font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 500; }
+  .svc .tick { position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--line); display: grid; place-items: center; font-size: 12px; color: transparent; }
+  .svc[aria-pressed="true"] .tick { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  .note { font-size: 13px; color: var(--muted); background: var(--linen); padding: 10px 12px; border-radius: 10px; }
+  .retiros { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opt { border: 1px solid var(--line); background: var(--surface); padding: 9px 14px; border-radius: 999px; cursor: pointer; font-size: 14px; }
+  .opt[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+  /* diseños */
+  .designs { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .dz { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--surface); cursor: pointer; text-align: left; padding: 0; display: grid; }
+  .dz img { width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block; max-width: 100%; }
+  .dz .cap { padding: 9px 11px; font-size: 13.5px; line-height: 1.3; display: grid; gap: 4px; }
+  .dz[aria-pressed="true"] { outline: 2px solid var(--ink); outline-offset: -2px; box-shadow: var(--shadow); }
+  .dz .blank { aspect-ratio: 4/5; display: grid; place-items: center; background: var(--linen); font-family: var(--f-display); font-size: 15px; color: var(--muted); padding: 14px; text-align: center; }
+
+  /* equipo */
+  .team { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+  .mem { border: 1px solid var(--line); background: var(--surface); border-radius: var(--r); padding: 14px; display: flex; gap: 12px; align-items: center; cursor: pointer; text-align: left; }
+  .mem[aria-pressed="true"] { border-color: var(--ink); box-shadow: var(--shadow); }
+  .av { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: var(--beige); font-family: var(--f-display); font-size: 17px; flex: none; }
+  .mem small { display: block; color: var(--muted); font-size: 12.5px; }
+
+  /* fechas y horas */
+  .dates { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 10px; scroll-snap-type: x proximity; }
+  .date { flex: none; width: 66px; padding: 10px 0 9px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; display: grid; justify-items: center; gap: 1px; scroll-snap-align: start; }
+  .date .d { font-family: var(--f-display); font-size: 22px; line-height: 1.1; }
+  .date small { font-size: 11.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  .date[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .date[aria-pressed="true"] small { color: var(--bg); opacity: .8; }
+  .date[disabled] { opacity: .35; cursor: not-allowed; }
+  .date .fest { font-size: 9.5px; color: var(--rose); letter-spacing: .04em; }
+  .slots-group h4 { font-family: var(--f-body); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; font-weight: 500; }
+  .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+  .slot { padding: 10px 6px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); cursor: pointer; font-variant-numeric: tabular-nums; font-size: 14px; }
+  .slot[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .slot[disabled] { text-decoration: line-through; opacity: .38; cursor: not-allowed; background: transparent; }
+  .empty { padding: 22px; text-align: center; border: 1px dashed var(--line); border-radius: var(--r); color: var(--muted); }
+
+  /* datos y resumen */
+  .form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form .full { grid-column: 1 / -1; }
+  @media (max-width: 560px) { .form { grid-template-columns: 1fr; } }
+  .summary { border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); overflow: hidden; }
+  .summary .row { display: flex; justify-content: space-between; gap: 14px; padding: 11px 16px; border-bottom: 1px solid var(--line); }
+  .summary .row:last-child { border-bottom: 0; }
+  .summary .row span:first-child { color: var(--muted); }
+  .summary .row span:last-child { text-align: right; min-width: 0; }
+  .summary .total { background: var(--linen); font-weight: 500; }
+  .check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; }
+  .check input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--ink); flex: none; }
+
+  /* barra inferior */
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; background: color-mix(in srgb, var(--surface) 94%, transparent); backdrop-filter: blur(10px);
+    border-top: 1px solid var(--line); z-index: 20; padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .bar .wrap { display: flex; gap: 12px; align-items: center; padding-block: 12px; }
+  .bar .sum { flex: 1; min-width: 0; font-size: 13.5px; color: var(--muted); line-height: 1.3; }
+  .bar .sum b { display: block; color: var(--ink); font-size: 17px; font-weight: 500; font-variant-numeric: tabular-nums; }
+
+  /* éxito */
+  .done { text-align: center; display: grid; gap: 14px; justify-items: center; padding-top: 10px; }
+  .done .seal { width: 76px; height: 76px; border-radius: 50%; display: grid; place-items: center; background: var(--linen); font-size: 34px; color: var(--accent); }
+  .pay { width: 100%; max-width: 460px; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); padding: 18px; display: grid; gap: 10px; text-align: left; }
+  .pay .amount { font-family: var(--f-display); font-size: 34px; }
+  .copy { display: flex; gap: 8px; align-items: center; justify-content: space-between; background: var(--linen); border-radius: 10px; padding: 8px 8px 8px 14px; }
+  .copy code { font-family: var(--f-body); font-size: 18px; letter-spacing: .06em; font-variant-numeric: tabular-nums; user-select: all; }
+
+  footer { border-top: 1px solid var(--line); background: var(--linen); }
+  .credit { border-top: 1px solid var(--line); padding-bottom: 110px; }
+  .credit .wrap { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 10px; padding-block: 14px; font-size: 13px; color: var(--muted); text-align: center; }
+  .credit a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--accent); }
+  .credit a:hover { color: var(--accent); }
+  footer > .wrap:first-child { padding-block: 28px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 22px; font-size: 14px; }
+  footer h4 { font-size: 16px; margin-bottom: 6px; }
+  footer ul { margin: 0; padding-left: 18px; color: var(--muted); display: grid; gap: 4px; }
+  footer .admin { font-size: 12.5px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="demo-bar" id="demoBar" hidden>Versión de demostración · Agenda una cita de prueba y luego mírala en el <a href="admin.html" style="font-weight:500">panel de administradora</a> (PIN 1234).</div>
+
+<header class="hero">
+  <div class="wrap">
+    <img src="img/logo-web.png" alt="Logo de El Castillo Rosa" width="112" height="118">
+    <div>
+      <div class="brand">El Castillo Rosa</div>
+      <div class="brand-sub">Nails Studio</div>
+      <div class="hero-meta">
+        <span id="hDir"></span>
+        <span>Lun a sáb · 9:00 a. m. – 6:00 p. m.</span>
+        <a id="hIg" target="_blank" rel="noopener">Instagram</a>
+        <a id="hTk" target="_blank" rel="noopener">TikTok</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <nav class="steps" id="steps" aria-label="Pasos para agendar"></nav>
+  <section class="panel" id="panel" aria-live="polite"></section>
+</main>
+
+<div class="bar" id="bar">
+  <div class="wrap">
+    <div class="sum" id="barSum"></div>
+    <button class="btn ghost" id="btnBack" type="button">Atrás</button>
+    <button class="btn" id="btnNext" type="button">Continuar</button>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <h4>Visítanos</h4>
+      <p id="fDir"></p>
+      <p class="muted">Lunes a sábado de 9:00 a. m. a 6:00 p. m.<br>Almuerzo de 12:00 m. a 2:00 p. m.<br>Festivos: solo en la mañana.</p>
+    </div>
+    <div>
+      <h4>Antes de tu cita</h4>
+      <ul id="fRules"></ul>
+    </div>
+    <div>
+      <h4>Escríbenos</h4>
+      <p>WhatsApp <span class="num" id="fWa"></span></p>
+      <p class="muted">Instagram @<span id="fIg"></span><br>TikTok @<span id="fTk"></span></p>
+      <p style="margin-top:14px"><a class="admin" href="admin.html">Acceso administradora</a></p>
+    </div>
+  </div>
+  <div class="credit">
+    <div class="wrap">
+      <span>¿Te gustaría un sitio así para tu negocio?</span>
+      <a href="https://camott.com" target="_blank" rel="noopener">Hecho por <b>Camott</b> →</a>
+    </div>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="config.js"></script>
+<script src="core.js"></script>
+<script>
+(function () {
+  const C = CR_CONFIG, N = C.negocio, $ = (s) => document.querySelector(s);
+  const S = { servicios: [], retiro: "", diseno: "", disenoNota: "", staff: "any", fecha: "", hora: "", staffAsignada: "", nombre: "", telefono: "", notas: "", acepta: false };
+  let paso = 0, ocupado = [], enviando = false;
+
+  /* textos fijos */
+  $("#demoBar").hidden = !CR.demo;
+  $("#hDir").textContent = `${N.direccion}, ${N.ciudad}`; $("#fDir").textContent = `${N.direccion}, ${N.ciudad}`;
+  $("#hIg").href = `https://instagram.com/${N.instagram}`; $("#hTk").href = `https://tiktok.com/@${N.tiktok}`;
+  $("#fWa").textContent = N.whatsapp; $("#fIg").textContent = N.instagram; $("#fTk").textContent = N.tiktok;
+  $("#fRules").innerHTML = [
+    `Para separar tu cita se requiere un abono del ${N.abonoPct}% por transferencia a Nequi ${N.nequi}.`,
+    `Puedes cancelar con ${N.cancelacionHoras} horas de anticipación y te reagendamos para otro día u horario.`,
+    "En el local recibimos efectivo o transferencia.",
+    "Te recomendamos volver cada 25 días para el retoque de tus uñas."
+  ].map((t) => `<li>${CR.esc(t)}</li>`).join("");
+
+  const toast = (t) => { const e = $("#toast"); e.textContent = t; e.classList.add("show"); clearTimeout(e._t); e._t = setTimeout(() => e.classList.remove("show"), 2600); };
+  const llevaDiseno = () => S.servicios.some((id) => (CR.servicio(id) || {}).disenos);
+  const llevaUnas = () => S.servicios.some((id) => (CR.servicio(id) || {}).cat === "Uñas");
+  const pasos = () => ["servicio", ...(llevaDiseno() ? ["diseno"] : []), "manicurista", "horario", "datos"];
+  const NOMBRES = { servicio: "Servicio", diseno: "Diseño", manicurista: "Manicurista", horario: "Fecha y hora", datos: "Tus datos" };
+  const calc = () => CR.calcular(S.servicios, llevaUnas() ? S.retiro : "");
+  const iniciales = (n) => n.split(" ").map((x) => x[0]).slice(0, 2).join("");
+
+  function render() {
+    const ps = pasos(); if (paso >= ps.length) paso = ps.length - 1;
+    $("#steps").innerHTML = ps.map((p, i) => `<div class="step ${i === paso ? "on" : i < paso ? "done" : ""}"><b>${i < paso ? "✓" : i + 1}</b>${NOMBRES[p]}</div>`).join("");
+    const k = ps[paso];
+    ({ servicio: vServicio, diseno: vDiseno, manicurista: vEquipo, horario: vHorario, datos: vDatos })[k]();
+    barra();
+  }
+  function barra() {
+    const c = calc(), k = pasos()[paso];
+    $("#barSum").innerHTML = S.servicios.length
+      ? `<b>${CR.money(c.precio)}</b>${S.servicios.length} servicio${S.servicios.length > 1 ? "s" : ""} · ${CR.dur(c.min)}`
+      : `<b>Elige tu servicio</b>Puedes escoger varios`;
+    $("#btnBack").hidden = paso === 0;
+    const ok = { servicio: S.servicios.length > 0, diseno: !!S.diseno, manicurista: !!S.staff, horario: !!S.hora, datos: S.nombre.trim().length > 1 && CR.tel(S.telefono).length === 10 && S.acepta }[k];
+    $("#btnNext").disabled = !ok || enviando;
+    $("#btnNext").textContent = k === "datos" ? (enviando ? "Agendando…" : "Agendar cita") : "Continuar";
+  }
+
+  /* ---------- paso: servicio ---------- */
+  function vServicio() {
+    const cats = [...new Set(CR.cat.servicios.filter((s) => s.activo !== false).map((s) => s.cat))];
+    let h = `<div><h2 class="title">¿Qué te vas a hacer?</h2><p class="lead">Escoge uno o varios servicios. Los atendemos en la misma cita.</p></div>`;
+    cats.forEach((cat) => {
+      const list = CR.cat.servicios.filter((s) => s.cat === cat && s.activo !== false);
+      h += `<div><div class="cat-title"><h3>${CR.esc(cat)}</h3><span class="eyebrow">${list.length} servicios</span></div><div class="svc-list">`;
+      list.forEach((s) => {
+        const on = S.servicios.includes(s.id);
+        h += `<button type="button" class="svc" data-svc="${s.id}" aria-pressed="${on}">
+          ${s.foto ? `<img class="ph" src="${CR.esc(s.foto)}" alt="" loading="lazy">` : `<span class="ph" aria-hidden="true">${CR.esc(s.nombre[0])}</span>`}
+          <span><span class="nm">${CR.esc(s.nombre)}</span><span class="mt"><span class="pr">${CR.money(s.precio)}</span> · ${CR.dur(+s.min)}</span>
+          ${s.nota ? `<span class="mt" style="display:block">${CR.esc(s.nota)}</span>` : ""}</span>
+          <span class="tick" aria-hidden="true">✓</span></button>`;
+      });
+      h += `</div></div>`;
+    });
+    if (llevaUnas()) {
+      h += `<div><div class="cat-title"><h3>¿Necesitas retiro?</h3></div><div class="retiros">` +
+        CR.cat.retiros.map((r) => `<button type="button" class="opt" data-ret="${r.id}" aria-pressed="${S.retiro === r.id}">${CR.esc(r.nombre)}${r.precio ? ` · ${CR.money(r.precio)}` : ""}</button>`).join("") +
+        `</div></div>`;
+    }
+    $("#panel").innerHTML = h;
+    $("#panel").querySelectorAll("[data-svc]").forEach((b) => (b.onclick = () => {
+      const id = b.dataset.svc; S.servicios = S.servicios.includes(id) ? S.servicios.filter((x) => x !== id) : [...S.servicios, id];
+      if (!llevaDiseno()) { S.diseno = ""; } S.hora = ""; render();
+    }));
+    $("#panel").querySelectorAll("[data-ret]").forEach((b) => (b.onclick = () => { S.retiro = b.dataset.ret; S.hora = ""; render(); }));
+  }
+
+  /* ---------- paso: diseño ---------- */
+  function vDiseno() {
+    let h = `<div><h2 class="title">Escoge tu diseño</h2><p class="lead">Son trabajos reales del salón. Los diseños con mucha decoración pueden tener un adicional de $5.000 que se confirma en el local.</p></div><div class="designs">`;
+    CR.cat.disenos.forEach((d) => {
+      h += `<button type="button" class="dz" data-dz="${d.id}" aria-pressed="${S.diseno === d.id}"><img src="${CR.esc(d.foto)}" alt="${CR.esc(d.nombre)}" loading="lazy">
+        <span class="cap">${CR.esc(d.nombre)}${d.deco ? `<span class="chip warn">Puede tener adicional</span>` : ""}</span></button>`;
+    });
+    h += `<button type="button" class="dz" data-dz="sencillo" aria-pressed="${S.diseno === "sencillo"}"><span class="blank">Un solo tono o francés</span><span class="cap">Sencillo, sin decoración</span></button>
+      <button type="button" class="dz" data-dz="propio" aria-pressed="${S.diseno === "propio"}"><span class="blank">Tengo mi propia referencia</span><span class="cap">La envías por WhatsApp</span></button></div>
+      <div class="field" ${S.diseno === "propio" ? "" : "hidden"} id="refBox"><label for="refNota">Cuéntanos tu idea (colores, forma, largo)</label>
+      <textarea class="input" id="refNota" placeholder="Ej.: almendradas, tono nude con francés dorado">${CR.esc(S.disenoNota)}</textarea></div>`;
+    $("#panel").innerHTML = h;
+    $("#panel").querySelectorAll("[data-dz]").forEach((b) => (b.onclick = () => { S.diseno = b.dataset.dz; render(); if (S.diseno === "propio") $("#refNota").focus(); }));
+    const t = $("#refNota"); if (t) t.oninput = () => (S.disenoNota = t.value);
+  }
+
+  /* ---------- paso: manicurista ---------- */
+  function vEquipo() {
+    const eq = CR.cat.equipo.filter((m) => m.activa !== false);
+    let h = `<div><h2 class="title">¿Con quién te quieres atender?</h2><p class="lead">Elige a tu manicurista de confianza. Si ya tiene una cita a esa hora, el horario aparecerá ocupado.</p></div><div class="team">
+      <button type="button" class="mem" data-mem="any" aria-pressed="${S.staff === "any"}"><span class="av">✦</span><span>La que esté disponible<small>Te mostramos más horarios</small></span></button>`;
+    eq.forEach((m) => { h += `<button type="button" class="mem" data-mem="${m.id}" aria-pressed="${S.staff === m.id}"><span class="av">${CR.esc(iniciales(m.nombre))}</span><span>${CR.esc(m.nombre)}<small>${diasTexto(m.dias)}</small></span></button>`; });
+    $("#panel").innerHTML = h + "</div>";
+    $("#panel").querySelectorAll("[data-mem]").forEach((b) => (b.onclick = () => { S.staff = b.dataset.mem; S.hora = ""; render(); }));
+  }
+  function diasTexto(d) { d = (d || []).slice().sort(); if (d.join() === "1,2,3,4,5,6") return "Lunes a sábado"; return d.map((x) => CR.DIAS_C[x]).join(", "); }
+
+  /* ---------- paso: horario ---------- */
+  async function vHorario() {
+    const c = calc();
+    const dias = [];
+    for (let i = 0; i <= C.horario.diasAdelante; i++) { const f = CR.addDays(CR.hoy(), i); dias.push(f); }
+    if (!S.fecha) S.fecha = dias.find((f) => CR.bloquesDelDia(f).length && (f !== CR.hoy() || CR.horarios(f, c.min, []).length)) || dias[0];
+    $("#panel").innerHTML = `<div><h2 class="title">Fecha y hora</h2><p class="lead">Tu cita dura aprox. ${CR.dur(c.min)}. Solo mostramos horas en las que alcanzamos a terminar antes del almuerzo o del cierre.</p></div>
+      <div class="dates" id="dates" role="group" aria-label="Fechas">${dias.map((f) => {
+        const d = CR.parse(f), cerrado = !CR.bloquesDelDia(f).length, fest = CR.festivo(f);
+        return `<button type="button" class="date" data-f="${f}" aria-pressed="${S.fecha === f}" ${cerrado ? "disabled" : ""} aria-label="${CR.fechaLarga(f)}${fest ? ", festivo" : ""}">
+          <small>${CR.DIAS_C[d.getDay()]}</small><span class="d">${d.getDate()}</span><small>${CR.MESES[d.getMonth()].slice(0, 3)}</small>${fest && !cerrado ? `<span class="fest">FESTIVO</span>` : ""}</button>`;
+      }).join("")}</div><div id="slots"><div class="empty">Cargando horarios…</div></div>`;
+    const sel = $("#dates").querySelector('[aria-pressed="true"]'); if (sel) sel.scrollIntoView({ inline: "center", block: "nearest" });
+    $("#dates").querySelectorAll("[data-f]").forEach((b) => (b.onclick = () => { S.fecha = b.dataset.f; S.hora = ""; $("#dates").querySelectorAll("[data-f]").forEach((x) => x.setAttribute("aria-pressed", x === b)); pintarSlots(); barra(); }));
+    try { ocupado = (await CR.api.ocupado()).ocupado || []; } catch (e) { $("#slots").innerHTML = `<div class="empty">No pudimos cargar la agenda. Revisa tu conexión e intenta de nuevo.</div>`; return; }
+    pintarSlots();
+  }
+  function pintarSlots() {
+    const c = calc(), lista = CR.horarios(S.fecha, c.min, ocupado);
+    const disp = (s) => (S.staff === "any" ? s.libres.length > 0 : s.libres.includes(S.staff));
+    const fest = CR.festivo(S.fecha);
+    let h = `<p class="muted" style="margin-bottom:12px">${CR.fechaLarga(S.fecha)}${fest ? ` · ${CR.esc(fest)} (festivo, abrimos solo en la mañana)` : ""}</p>`;
+    if (!lista.length || !lista.some(disp)) {
+      h += `<div class="empty">No quedan horarios para ${S.staff === "any" ? "este día" : CR.esc(CR.miembro(S.staff).nombre) + " este día"}. Prueba con otra fecha${S.staff !== "any" ? " o con otra manicurista" : ""}.</div>`;
+    } else {
+      [["Mañana", (m) => m < 720], ["Tarde", (m) => m >= 720]].forEach(([t, f]) => {
+        const g = lista.filter((s) => f(CR.toMin(s.hora))); if (!g.length) return;
+        h += `<div class="slots-group" style="margin-bottom:16px"><h4>${t}</h4><div class="slots">${g.map((s) =>
+          `<button type="button" class="slot" data-h="${s.hora}" aria-pressed="${S.hora === s.hora}" ${disp(s) ? "" : 'disabled aria-label="' + CR.hora12(s.hora) + ' ocupado"'}>${CR.hora12(s.hora)}</button>`).join("")}</div></div>`;
+      });
+    }
+    $("#slots").innerHTML = h;
+    $("#slots").querySelectorAll("[data-h]").forEach((b) => (b.onclick = () => {
+      S.hora = b.dataset.h; const s = lista.find((x) => x.hora === S.hora);
+      S.staffAsignada = S.staff === "any" ? CR.asignar(s.libres, S.fecha, ocupado) : S.staff;
+      $("#slots").querySelectorAll("[data-h]").forEach((x) => x.setAttribute("aria-pressed", x === b)); barra();
+    }));
+  }
+
+  /* ---------- paso: datos ---------- */
+  function filas() {
+    const c = calc(), m = CR.miembro(S.staffAsignada), r = llevaUnas() ? CR.retiro(S.retiro) : null;
+    const dz = S.diseno === "sencillo" ? "Un solo tono o francés" : S.diseno === "propio" ? "Referencia propia" + (S.disenoNota ? `: ${S.disenoNota}` : "") : (CR.diseno(S.diseno) || {}).nombre;
+    return [["Servicio", CR.nombresServicios(S.servicios)], ...(dz ? [["Diseño", dz]] : []), ...(r && r.precio ? [["Retiro", r.nombre]] : []),
+      ["Fecha", CR.fechaLarga(S.fecha)], ["Hora", `${CR.hora12(S.hora)} · ${CR.dur(c.min)}`], ["Manicurista", m ? m.nombre : ""],
+      ["Total aproximado", CR.money(c.precio)], [`Abono para separar (${N.abonoPct}%)`, CR.money(c.abono)]];
+  }
+  function vDatos() {
+    $("#panel").innerHTML = `<div><h2 class="title">Tus datos</h2><p class="lead">Te escribiremos a este WhatsApp para confirmar tu cita.</p></div>
+      <div class="form">
+        <div class="field"><label for="fNombre">Nombre completo</label><input class="input" id="fNombre" autocomplete="name" value="${CR.esc(S.nombre)}"></div>
+        <div class="field"><label for="fTel">WhatsApp (10 dígitos)</label><input class="input num" id="fTel" inputmode="tel" autocomplete="tel" placeholder="3xx xxx xxxx" value="${CR.esc(S.telefono)}"></div>
+        <div class="field full"><label for="fNotas">Algo que debamos saber (opcional)</label><textarea class="input" id="fNotas" placeholder="Ej.: tengo una uña partida, quiero forma cuadrada">${CR.esc(S.notas)}</textarea></div>
+      </div>
+      <div class="summary">${filas().map(([a, b], i, arr) => `<div class="row ${i >= arr.length - 2 ? "total" : ""}"><span>${CR.esc(a)}</span><span>${CR.esc(b)}</span></div>`).join("")}</div>
+      <label class="check"><input type="checkbox" id="fAcepta" ${S.acepta ? "checked" : ""}><span>Entiendo que mi cita queda separada al enviar el abono del ${N.abonoPct}% (${CR.money(calc().abono)}) a Nequi ${N.nequi}, y que puedo cancelar o reagendar con ${N.cancelacionHoras} horas de anticipación.</span></label>`;
+    $("#fNombre").oninput = (e) => { S.nombre = e.target.value; barra(); };
+    $("#fTel").oninput = (e) => { S.telefono = e.target.value; barra(); };
+    $("#fNotas").oninput = (e) => (S.notas = e.target.value);
+    $("#fAcepta").onchange = (e) => { S.acepta = e.target.checked; barra(); };
+  }
+
+  async function agendar() {
+    enviando = true; barra();
+    const c = calc();
+    const cita = { fecha: S.fecha, hora: S.hora, min: c.min, staff: S.staffAsignada, servicios: S.servicios, retiro: llevaUnas() ? S.retiro : "",
+      diseno: S.diseno, disenoNota: S.disenoNota, nombre: S.nombre.trim(), telefono: CR.tel(S.telefono), notas: S.notas.trim(), total: c.precio, abono: c.abono };
+    try {
+      const r = await CR.api.crearCita(cita);
+      exito(r.cita || cita);
+    } catch (e) {
+      enviando = false;
+      if (e.code === "ocupado") { toast(e.message); S.hora = ""; paso = pasos().indexOf("horario"); render(); }
+      else { toast("No se pudo agendar. Revisa tu conexión e intenta de nuevo."); barra(); }
+    }
+  }
+  function exito(cita) {
+    const c = calc(), cod = String(cita.id || "").slice(-5).toUpperCase();
+    const msg = `Hola, soy ${S.nombre.trim()}. Acabo de agendar una cita en ${N.nombre}:\n` + filas().slice(0, -2).map(([a, b]) => `• ${a}: ${b}`).join("\n") +
+      `\n• Total aprox.: ${CR.money(c.precio)}\n\nTe envío el comprobante del abono de ${CR.money(c.abono)} (Nequi ${N.nequi}).${cod ? ` Código de cita: ${cod}` : ""}`;
+    $("#steps").innerHTML = ""; $("#bar").hidden = true;
+    $("#panel").innerHTML = `<div class="done">
+      <div class="seal" aria-hidden="true">✦</div>
+      <h2 class="title">¡Tu cita quedó apartada, ${CR.esc(CR.primerNombre(S.nombre))}!</h2>
+      <p class="lead" style="max-width:520px">${CR.esc(CR.fechaLarga(S.fecha))} a las ${CR.hora12(S.hora)} con ${CR.esc((CR.miembro(S.staffAsignada) || {}).nombre || "")}. Para confirmarla, envía el abono y el comprobante por WhatsApp.</p>
+      <div class="pay">
+        <span class="eyebrow">Abono del ${N.abonoPct}%</span>
+        <span class="amount num">${CR.money(c.abono)}</span>
+        <span class="muted">Transfiere a Nequi:</span>
+        <div class="copy"><code id="nequi">${N.nequi}</code><button class="btn soft sm" id="cp" type="button">Copiar</button></div>
+        <a class="btn wa" href="${CR.wa(N.whatsapp, msg)}" target="_blank" rel="noopener">Enviar comprobante por WhatsApp</a>
+        <p class="muted" style="font-size:13px">Si el enlace no abre, escríbenos al ${N.whatsapp}. El resto del valor se paga en el local en efectivo o transferencia.${cod ? ` Tu código de cita es <b class="num">${cod}</b>.` : ""}</p>
+      </div>
+      <button class="btn ghost" id="otra" type="button">Agendar otra cita</button></div>`;
+    $("#cp").onclick = () => { const ok = () => toast("Número copiado"); navigator.clipboard ? navigator.clipboard.writeText(N.nequi).then(ok, () => sel()) : sel(); };
+    const sel = () => { const r = document.createRange(); r.selectNodeContents($("#nequi")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Número seleccionado, cópialo"); };
+    $("#otra").onclick = () => location.reload();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  $("#btnNext").onclick = () => { const k = pasos()[paso]; if (k === "datos") return agendar(); paso++; render(); window.scrollTo({ top: $("#steps").offsetTop - 10, behavior: "smooth" }); };
+  $("#btnBack").onclick = () => { paso = Math.max(0, paso - 1); render(); };
+
+  CR.api.catalogo().then((r) => { CR.aplicarCatalogo(r); render(); }).catch(() => render());
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Panel · El Castillo Rosa</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="robots" content="noindex">
+<link rel="icon" href="img/logo-web.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Marcellus&family=Pinyon+Script&display=swap">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+  /* login */
+  .login { min-height: 80vh; display: grid; place-items: center; }
+  .login form { width: 100%; max-width: 340px; display: grid; gap: 14px; text-align: center; justify-items: center; }
+  .login img { width: 96px; }
+  .login .brand { font-family: var(--f-script); font-size: 44px; line-height: 1; }
+  .login .input { text-align: center; font-size: 22px; letter-spacing: .4em; }
+  /* barra superior */
+  .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 15; background: var(--surface); border-bottom: 1px solid var(--line); }
+  .top .wrap { display: flex; align-items: center; gap: 12px; padding-block: 10px 0; flex-wrap: wrap; }
+  .top img { width: 38px; }
+  .top .who { flex: 1; min-width: 0; line-height: 1.15; }
+  .top .who b { font-family: var(--f-script); font-size: 27px; font-weight: 400; display: block; }
+  .top .who span { font-size: 12px; color: var(--muted); }
+  .tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; width: 100%; margin-top: 6px; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { border: 0; background: none; padding: 10px 14px 11px; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; white-space: nowrap; font-size: 14.5px; display: flex; gap: 6px; align-items: center; }
+  .tab[aria-selected="true"] { color: var(--ink); border-color: var(--ink); }
+  .tab .n { font-size: 11px; background: var(--rose); color: #fff; border-radius: 999px; padding: 0 6px; line-height: 17px; font-variant-numeric: tabular-nums; }
+  main { padding-block: 22px 80px; }
+  .head { display: flex; align-items: end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+  .head h1 { font-size: clamp(24px, 4vw, 30px); }
+  .head p { color: var(--muted); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+  .card > h3 { font-size: 17px; padding: 14px 16px 0; }
+  .card .sub { font-size: 12.5px; color: var(--muted); padding: 0 16px; }
+  .grid { display: grid; gap: 14px; }
+  .g2 { grid-template-columns: 1.4fr 1fr; }
+  @media (max-width: 860px) { .g2 { grid-template-columns: 1fr; } }
+
+  /* indicadores */
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 14px; }
+  .kpi { padding: 14px 16px; display: grid; gap: 2px; cursor: default; text-align: left; }
+  button.kpi { cursor: pointer; font: inherit; color: inherit; }
+  .kpi .v { font-family: var(--f-display); font-size: 30px; line-height: 1.15; font-variant-numeric: tabular-nums; }
+  .kpi .l { font-size: 13px; color: var(--muted); }
+  .kpi .d { font-size: 12.5px; }
+  .kpi.alert { border-color: var(--rose); }
+
+  /* listas */
+  .list { display: grid; }
+  .li { display: grid; grid-template-columns: 84px 1fr auto; gap: 12px; align-items: center; padding: 11px 16px; border-top: 1px solid var(--line); cursor: pointer; background: none; border-left: 0; border-right: 0; border-bottom: 0; text-align: left; width: 100%; }
+  .li:hover { background: var(--linen); }
+  .li .t { font-variant-numeric: tabular-nums; font-weight: 500; }
+  .li .t small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+  .li .m { min-width: 0; }
+  .li .m b { font-weight: 500; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .li .m span { font-size: 13px; color: var(--muted); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .nothing { padding: 22px 16px; color: var(--muted); text-align: center; border-top: 1px solid var(--line); }
+
+  /* gráficos */
+  .chart { padding: 10px 16px 16px; }
+  .chart svg { width: 100%; height: auto; display: block; }
+  .chart text { fill: var(--muted); font-size: 11px; font-family: var(--f-body); }
+  .hbars { display: grid; gap: 10px; padding: 14px 16px 16px; }
+  .hb { display: grid; grid-template-columns: 120px 1fr 54px; gap: 10px; align-items: center; font-size: 13.5px; }
+  .hb .tr { height: 10px; border-radius: 6px; background: var(--linen); overflow: hidden; }
+  .hb .tr i { display: block; height: 100%; background: var(--accent); border-radius: 6px; }
+  .hb .c { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+
+  /* agenda */
+  .daynav { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .daynav .input { width: auto; padding: 8px 10px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+  .cal { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
+  .cal-in { display: grid; min-width: 640px; position: relative; }
+  .cal-h { display: contents; }
+  .cal-h div { position: sticky; top: 0; padding: 10px 8px; font-size: 13.5px; border-bottom: 1px solid var(--line); background: var(--surface); text-align: center; z-index: 2; }
+  .hours { position: relative; border-right: 1px solid var(--line); }
+  .hours span { position: absolute; right: 6px; font-size: 11px; color: var(--muted); transform: translateY(-50%); font-variant-numeric: tabular-nums; }
+  .colm { position: relative; border-right: 1px solid var(--line); }
+  .colm:last-child { border-right: 0; }
+  .hl { position: absolute; left: 0; right: 0; border-top: 1px dashed var(--line); }
+  .closed { position: absolute; left: 0; right: 0; background: repeating-linear-gradient(135deg, var(--linen) 0 6px, transparent 6px 12px); display: grid; place-items: center; font-size: 11px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+  .ev { position: absolute; left: 4px; right: 4px; border-radius: 8px; padding: 5px 7px; font-size: 12px; line-height: 1.25; overflow: hidden; cursor: pointer; border: 0; text-align: left; border-left: 3px solid; }
+  .ev b { display: block; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ev span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: .85; }
+  .ev.pendiente { background: var(--warn-bg); color: var(--warn); border-color: var(--warn); }
+  .ev.confirmada { background: var(--info-bg); color: var(--info); border-color: var(--info); }
+  .ev.atendida { background: var(--ok-bg); color: var(--ok); border-color: var(--ok); }
+  .ev.bloqueo { background: var(--linen); color: var(--muted); border-color: var(--beige); }
+  .now { position: absolute; left: 0; right: 0; height: 2px; background: var(--rose); z-index: 1; }
+
+  /* tablas */
+  .tablewrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-weight: 500; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tr.click { cursor: pointer; } tr.click:hover td { background: var(--linen); }
+  td.r, th.r { text-align: right; font-variant-numeric: tabular-nums; }
+  .tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .tools .input { max-width: 300px; }
+  .seg { display: inline-flex; background: var(--linen); border-radius: 999px; padding: 3px; flex-wrap: wrap; }
+  .seg button { border: 0; background: none; padding: 6px 13px; border-radius: 999px; cursor: pointer; font-size: 13.5px; color: var(--muted); }
+  .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+
+  /* renovar */
+  .ren { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
+  .rc { padding: 14px 16px; display: grid; gap: 10px; }
+  .rc .top2 { display: flex; justify-content: space-between; gap: 10px; align-items: start; }
+  .rc b { font-weight: 500; }
+  .rc .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* formulario */
+  .form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; padding: 18px; }
+  .form .full { grid-column: 1 / -1; }
+  @media (max-width: 640px) { .form { grid-template-columns: 1fr; } }
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill { border: 1px solid var(--line); background: var(--surface); padding: 7px 12px; border-radius: 999px; cursor: pointer; font-size: 13.5px; }
+  .pill[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .slotsel { display: flex; flex-wrap: wrap; gap: 6px; }
+  .slotsel button { border: 1px solid var(--line); background: var(--surface); padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .slotsel button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .slotsel button[disabled] { opacity: .35; text-decoration: line-through; cursor: not-allowed; }
+  .formfoot { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; padding: 0 18px 18px; align-items: center; }
+  .warnbox { background: var(--bad-bg); color: var(--bad); padding: 10px 14px; border-radius: 10px; font-size: 14px; }
+
+  /* promociones */
+  .promo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 14px; align-items: start; }
+  @media (max-width: 860px) { .promo { grid-template-columns: 1fr; } }
+  .bubble { background: #dcf3d6; color: #1f2a1d; border-radius: 12px 12px 12px 3px; padding: 10px 12px; white-space: pre-wrap; font-size: 14px; margin: 0 16px 16px; }
+  .rcp { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 9px 16px; border-top: 1px solid var(--line); }
+  .rcp input { width: 17px; height: 17px; accent-color: var(--ink); }
+  .rcp small { display: block; color: var(--muted); }
+
+  /* servicios editables */
+  .edit td { padding: 6px 6px; }
+  .edit .input { padding: 7px 9px; font-size: 14px; min-width: 70px; }
+  .days { display: flex; gap: 4px; flex-wrap: wrap; }
+  .days label { font-size: 12px; display: flex; gap: 3px; align-items: center; background: var(--linen); padding: 3px 7px; border-radius: 6px; cursor: pointer; }
+
+  /* panel lateral */
+  .scrim { position: fixed; inset: 0; background: rgba(30, 20, 15, .38); z-index: 40; opacity: 0; transition: opacity .2s; }
+  .scrim.on { opacity: 1; }
+  .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(440px, 100%); background: var(--surface); z-index: 41; box-shadow: var(--shadow); transform: translateX(100%); transition: transform .22s; display: flex; flex-direction: column;
+    padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); padding-right: env(safe-area-inset-right, 0px); }
+  .drawer.on { transform: none; }
+  .drawer header { display: flex; justify-content: space-between; align-items: start; gap: 10px; padding: 18px 18px 12px; border-bottom: 1px solid var(--line); }
+  .drawer header h2 { font-size: 22px; }
+  .drawer .body { padding: 16px 18px; overflow-y: auto; display: grid; gap: 14px; align-content: start; flex: 1; }
+  .kv { display: grid; grid-template-columns: 110px 1fr; gap: 6px 12px; font-size: 14px; }
+  .kv dt { color: var(--muted); } .kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+  .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .x { border: 0; background: var(--linen); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 18px; flex: none; }
+  .confirm { background: var(--linen); padding: 12px; border-radius: 10px; display: grid; gap: 10px; }
+</style>
+</head>
+<body>
+<div class="demo-bar" id="demoBar" hidden>Modo demostración · PIN 1234 · Los datos de ejemplo están marcados como “(ejemplo)”.</div>
+
+<section class="login wrap" id="login">
+  <form id="loginForm">
+    <img src="img/logo-web.png" alt="" width="96" height="101">
+    <div class="brand">El Castillo Rosa</div>
+    <p class="muted">Panel de administradora</p>
+    <input class="input num" id="pin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN" aria-label="PIN">
+    <button class="btn" type="submit" style="width:100%">Entrar</button>
+    <p class="muted" id="loginErr" style="color:var(--bad)" hidden></p>
+    <a class="muted" href="index.html" style="font-size:13px">Ir al sitio de agendamiento</a>
+    <a class="muted" href="https://camott.com" target="_blank" rel="noopener" style="font-size:12px;margin-top:18px">Sitio hecho por Camott · ¿Quieres uno para tu negocio?</a>
+  </form>
+</section>
+
+<div id="app" hidden>
+  <div class="top">
+    <div class="wrap">
+      <img src="img/logo-web.png" alt="" width="38" height="40">
+      <div class="who"><b>El Castillo Rosa</b><span id="hoyTxt"></span></div>
+      <button class="btn ghost sm" id="refresh" type="button">Actualizar</button>
+      <nav class="tabs" role="tablist" id="tabs"></nav>
+    </div>
+  </div>
+  <main class="wrap" id="view"></main>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" aria-hidden="true"></aside>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="config.js"></script>
+<script src="core.js"></script>
+<script>
+(function () {
+  const C = CR_CONFIG, N = C.negocio, $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const E = CR.esc;
+  let PIN = "", D = { citas: [], recordatorios: {} }, CL = [], vista = "resumen", agendaFecha = CR.hoy();
+  const ESTADOS = { pendiente: ["Abono pendiente", "warn"], confirmada: ["Confirmada", "info"], atendida: ["Atendida", "ok"], cancelada: ["Cancelada", "bad"], "no-asistio": ["No asistió", "bad"], bloqueo: ["Espacio bloqueado", ""] };
+  const chip = (e) => { const [t, k] = ESTADOS[e] || [e, ""]; return `<span class="chip ${k}">${t}</span>`; };
+  const toast = (t) => { const e = $("#toast"); e.textContent = t; e.classList.add("show"); clearTimeout(e._t); e._t = setTimeout(() => e.classList.remove("show"), 2600); };
+  const linkAgenda = () => location.href.replace(/admin\.html.*$/, "").replace(/[?#].*$/, "");
+  const nombreM = (id) => (CR.miembro(id) || { nombre: "—" }).nombre;
+  const ses = { get() { try { return sessionStorage.getItem("cr_pin") || ""; } catch (e) { return ""; } }, set(v) { try { sessionStorage.setItem("cr_pin", v); } catch (e) {} } };
+
+  $("#demoBar").hidden = !CR.demo;
+
+  /* ---------- acceso ---------- */
+  $("#loginForm").onsubmit = async (ev) => {
+    ev.preventDefault(); const p = $("#pin").value.trim(); $("#loginErr").hidden = true;
+    try { await CR.api.login(p); PIN = p; ses.set(p); arrancar(); }
+    catch (e) { $("#loginErr").textContent = e.code === "pin" ? "PIN incorrecto. Intenta de nuevo." : "No hay conexión con la agenda. Revisa internet."; $("#loginErr").hidden = false; }
+  };
+  async function cargar() {
+    const r = await CR.api.todo(PIN);
+    CR.aplicarCatalogo(r);
+    D = { citas: (r.citas || []).map((c) => ({ ...c, servicios: Array.isArray(c.servicios) ? c.servicios : String(c.servicios || "").split(",").filter(Boolean), min: +c.min, total: +c.total, abono: +c.abono, cobrado: +c.cobrado || 0 })), recordatorios: r.recordatorios || {} };
+    CL = CR.clientas(D.citas);
+  }
+  async function arrancar() {
+    $("#login").hidden = true; $("#app").hidden = false;
+    $("#hoyTxt").textContent = "Hoy es " + CR.fechaLarga(CR.hoy());
+    try { await cargar(); } catch (e) { toast("No se pudieron cargar los datos"); }
+    pintar();
+  }
+  $("#refresh").onclick = async () => { await cargar(); pintar(); toast("Agenda actualizada"); };
+
+  /* ---------- pestañas ---------- */
+  const TABS = [["resumen", "Resumen"], ["agenda", "Agenda"], ["nueva", "Nueva cita"], ["renovar", "Por renovar"], ["clientas", "Clientas"], ["promos", "Promociones"], ["ajustes", "Servicios y equipo"]];
+  function porRenovar() {
+    return CL.filter((k) => k.retoque && !k.proxima && k.retoque.dias <= 7 && k.retoque.dias >= -45)
+      .map((k) => ({ ...k, recordada: (D.recordatorios[k.telefono] || "") >= k.retoque.desde }))
+      .sort((a, b) => a.retoque.dias - b.retoque.dias);
+  }
+  function pintar() {
+    const nRen = porRenovar().filter((k) => !k.recordada).length;
+    const nPend = D.citas.filter((c) => c.estado === "pendiente" && c.fecha >= CR.hoy()).length;
+    $("#tabs").innerHTML = TABS.map(([k, t]) => `<button class="tab" role="tab" data-tab="${k}" aria-selected="${vista === k}">${t}${k === "renovar" && nRen ? `<span class="n">${nRen}</span>` : ""}${k === "agenda" && nPend ? `<span class="n">${nPend}</span>` : ""}</button>`).join("");
+    $$("[data-tab]").forEach((b) => (b.onclick = () => { vista = b.dataset.tab; if (vista !== "nueva") editando = null; pintar(); window.scrollTo(0, 0); }));
+    ({ resumen: vResumen, agenda: vAgenda, nueva: vNueva, renovar: vRenovar, clientas: vClientas, promos: vPromos, ajustes: vAjustes })[vista]();
+  }
+  const ir = (v) => { vista = v; pintar(); window.scrollTo(0, 0); };
+
+  /* ---------- resumen ---------- */
+  function vResumen() {
+    const hoy = CR.hoy(), d = CR.parse(hoy), lunes = CR.addDays(hoy, -((d.getDay() + 6) % 7)), domingo = CR.addDays(lunes, 6);
+    const mes = hoy.slice(0, 7), mesAnt = CR.ymd(new Date(d.getFullYear(), d.getMonth() - 1, 1)).slice(0, 7);
+    const act = D.citas.filter((c) => !["cancelada", "bloqueo"].includes(c.estado));
+    const citasHoy = act.filter((c) => c.fecha === hoy).sort((a, b) => (a.hora > b.hora ? 1 : -1));
+    const semana = act.filter((c) => c.fecha >= lunes && c.fecha <= domingo);
+    const ing = (m) => D.citas.filter((c) => c.estado === "atendida" && c.fecha.slice(0, 7) === m).reduce((s, c) => s + (+c.cobrado || +c.total), 0);
+    const iMes = ing(mes), iAnt = ing(mesAnt);
+    const pend = D.citas.filter((c) => c.estado === "pendiente" && c.fecha >= hoy).sort((a, b) => (a.fecha + a.hora > b.fecha + b.hora ? 1 : -1));
+    const ren = porRenovar(), renN = ren.filter((k) => !k.recordada).length;
+    const prox = act.filter((c) => (c.fecha > hoy) && ["pendiente", "confirmada"].includes(c.estado)).sort((a, b) => (a.fecha + a.hora > b.fecha + b.hora ? 1 : -1)).slice(0, 6);
+    const delta = iAnt ? Math.round(((iMes - iAnt) / iAnt) * 100) : null;
+
+    // ingresos por semana (8 semanas)
+    const semanas = [];
+    for (let i = 7; i >= 0; i--) { const ini = CR.addDays(lunes, -7 * i), fin = CR.addDays(ini, 6);
+      semanas.push({ ini, v: D.citas.filter((c) => c.estado === "atendida" && c.fecha >= ini && c.fecha <= fin).reduce((s, c) => s + (+c.cobrado || +c.total), 0) }); }
+    // por manicurista (mes)
+    const delMes = D.citas.filter((c) => c.estado === "atendida" && c.fecha.slice(0, 7) === mes);
+    const porM = CR.cat.equipo.map((m) => ({ n: m.nombre, v: delMes.filter((c) => c.staff === m.id).length }));
+    const maxM = Math.max(1, ...porM.map((x) => x.v));
+    // servicios del mes
+    const cuenta = {}; delMes.forEach((c) => c.servicios.forEach((s) => (cuenta[s] = (cuenta[s] || 0) + 1)));
+    const top = Object.entries(cuenta).sort((a, b) => b[1] - a[1]).slice(0, 5); const maxS = Math.max(1, ...top.map((x) => x[1]));
+
+    $("#view").innerHTML = `
+      <div class="head"><div><h1>Buen día</h1><p>${E(CR.fechaLarga(hoy))}${CR.festivo(hoy) ? " · festivo, media jornada" : ""}</p></div>
+        <button class="btn" id="goNueva" type="button">+ Agregar cita</button></div>
+      <div class="kpis">
+        <button class="card kpi" data-go="agenda"><span class="l">Citas hoy</span><span class="v">${citasHoy.length}</span><span class="d muted">${citasHoy.filter((c) => c.estado === "atendida").length} atendidas</span></button>
+        <div class="card kpi"><span class="l">Citas esta semana</span><span class="v">${semana.length}</span><span class="d muted">${CR.fechaCorta(lunes)} – ${CR.fechaCorta(domingo)}</span></div>
+        <div class="card kpi"><span class="l">Ingresos de ${CR.MESES[d.getMonth()]}</span><span class="v">${CR.money(iMes)}</span><span class="d ${delta == null ? "muted" : delta >= 0 ? "" : ""}" style="color:${delta == null ? "var(--muted)" : delta >= 0 ? "var(--ok)" : "var(--bad)"}">${delta == null ? "Sin datos del mes anterior" : (delta >= 0 ? "▲ " : "▼ ") + Math.abs(delta) + "% vs. " + CR.MESES[(d.getMonth() + 11) % 12]}</span></div>
+        <button class="card kpi ${pend.length ? "alert" : ""}" data-go="agenda"><span class="l">Abonos por confirmar</span><span class="v">${pend.length}</span><span class="d muted">${CR.money(pend.reduce((s, c) => s + +c.abono, 0))} por recibir</span></button>
+        <button class="card kpi ${renN ? "alert" : ""}" data-go="renovar"><span class="l">Clientas por renovar</span><span class="v">${renN}</span><span class="d muted">Sin recordar todavía</span></button>
+      </div>
+      <div class="grid g2">
+        <div class="grid">
+          <div class="card"><h3>Agenda de hoy</h3><p class="sub">${citasHoy.length ? "Toca una cita para confirmarla, marcarla atendida o reagendar" : ""}</p><div class="list" style="margin-top:8px">${citasHoy.map(liCita).join("") || `<div class="nothing">No hay citas para hoy.</div>`}</div></div>
+          <div class="card"><h3>Próximas citas</h3><div class="list" style="margin-top:8px">${prox.map((c) => liCita(c, true)).join("") || `<div class="nothing">No hay citas próximas.</div>`}</div></div>
+          <div class="card"><h3>Ingresos por semana</h3><p class="sub">Servicios atendidos, últimas 8 semanas</p><div class="chart">${barras(semanas)}</div></div>
+        </div>
+        <div class="grid" style="align-content:start">
+          <div class="card"><h3>Abonos pendientes</h3><p class="sub">Citas apartadas sin comprobante confirmado</p><div class="list" style="margin-top:8px">${pend.slice(0, 6).map((c) => liCita(c, true)).join("") || `<div class="nothing">Todo al día.</div>`}</div></div>
+          <div class="card"><h3>Atenciones del mes por manicurista</h3><div class="hbars">${porM.map((x) => `<div class="hb"><span>${E(x.n)}</span><span class="tr"><i style="width:${(x.v / maxM) * 100}%"></i></span><span class="c">${x.v}</span></div>`).join("")}</div></div>
+          <div class="card"><h3>Servicios más pedidos</h3><div class="hbars">${top.map(([s, v]) => `<div class="hb"><span>${E((CR.servicio(s) || { nombre: s }).nombre)}</span><span class="tr"><i style="width:${(v / maxS) * 100}%"></i></span><span class="c">${v}</span></div>`).join("") || `<p class="muted">Aún no hay servicios atendidos este mes.</p>`}</div></div>
+        </div>
+      </div>`;
+    $("#goNueva").onclick = () => { editando = null; ir("nueva"); };
+    $$("[data-go]").forEach((b) => (b.onclick = () => { if (b.dataset.go === "agenda") agendaFecha = CR.hoy(); ir(b.dataset.go); }));
+    enlazarCitas();
+  }
+  function liCita(c, conFecha) {
+    return `<button class="li" data-cita="${c.id}"><span class="t">${CR.hora12(c.hora).replaceAll(" ", "&nbsp;")}${conFecha ? `<small>${CR.DIAS_C[CR.parse(c.fecha).getDay()]} ${CR.fechaCorta(c.fecha)}</small>` : ""}</span>
+      <span class="m"><b>${E(c.estado === "bloqueo" ? "Espacio bloqueado" : c.nombre)}</b><span>${E(c.estado === "bloqueo" ? c.notas || "" : CR.nombresServicios(c.servicios))} · ${E(nombreM(c.staff))}</span></span>${chip(c.estado)}</button>`;
+  }
+  function enlazarCitas(root = document) { $$("[data-cita]", root).forEach((b) => (b.onclick = () => detalle(b.dataset.cita))); }
+  function barras(data) {
+    const W = 560, H = 190, L = 54, B = 26, T = 12, max = Math.max(1, ...data.map((d) => d.v));
+    const step = niceStep(max), top = Math.ceil(max / step) * step || step, bw = (W - L) / data.length;
+    let g = "";
+    for (let v = 0; v <= top; v += step) { const y = T + (H - T - B) * (1 - v / top); g += `<line x1="${L}" x2="${W}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${L - 8}" y="${y + 4}" text-anchor="end">${v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : Math.round(v / 1000) + "k"}</text>`; }
+    data.forEach((d, i) => { const h = (H - T - B) * (d.v / top), x = L + i * bw + bw * 0.2, y = H - B - h, last = i === data.length - 1;
+      g += `<rect x="${x}" y="${y}" width="${bw * 0.6}" height="${Math.max(h, 0)}" rx="4" fill="${last ? "var(--ink)" : "var(--accent)"}" opacity="${last ? 1 : 0.75}"><title>${CR.money(d.v)}</title></rect>
+        <text x="${x + bw * 0.3}" y="${H - 8}" text-anchor="middle">${CR.fechaCorta(d.ini)}</text>`; });
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Ingresos por semana">${g}</svg>`;
+  }
+  function niceStep(max) { const raw = max / 4, p = Math.pow(10, Math.floor(Math.log10(raw))), n = raw / p; return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10) * p; }
+
+  /* ---------- agenda ---------- */
+  function vAgenda() {
+    const f = agendaFecha, bloques = CR.bloquesDelDia(f), fest = CR.festivo(f);
+    const eq = CR.cat.equipo.filter((m) => m.activa !== false);
+    const delDia = D.citas.filter((c) => c.fecha === f && c.estado !== "cancelada");
+    const ini = 9 * 60, fin = 18 * 60, PX = 1.15, alto = (fin - ini) * PX;
+    const y = (m) => (m - ini) * PX;
+    let horas = ""; for (let h = 9; h <= 18; h++) horas += `<span style="top:${y(h * 60)}px">${h <= 12 ? h : h - 12}${h < 12 ? " am" : " pm"}</span>`;
+    let lineas = ""; for (let h = 9; h <= 18; h++) lineas += `<div class="hl" style="top:${y(h * 60)}px"></div>`;
+    // franjas cerradas
+    let cerr = ""; let cur = ini;
+    bloques.forEach(([a, b]) => { if (a > cur) cerr += `<div class="closed" style="top:${y(cur)}px;height:${(a - cur) * PX}px">${cur >= 720 && a <= 840 ? "Almuerzo" : "Cerrado"}</div>`; cur = b; });
+    if (cur < fin) cerr += `<div class="closed" style="top:${y(cur)}px;height:${(fin - cur) * PX}px">${bloques.length ? (cur === 720 ? "Festivo · cerrado" : "Cerrado") : "Cerrado"}</div>`;
+    const ahora = f === CR.hoy() && CR.ahoraMin() > ini && CR.ahoraMin() < fin ? `<div class="now" style="top:${y(CR.ahoraMin())}px"></div>` : "";
+    const cols = eq.map((m) => {
+      const evs = delDia.filter((c) => c.staff === m.id).map((c) => {
+        const t = CR.toMin(c.hora), cls = ["pendiente", "confirmada", "atendida", "bloqueo"].includes(c.estado) ? c.estado : "bloqueo";
+        return `<button class="ev ${cls}" data-cita="${c.id}" style="top:${y(t) + 1}px;height:${c.min * PX - 2}px" title="${E(c.nombre || "")}">
+          <b>${CR.hora12(c.hora)} ${E(c.estado === "bloqueo" ? "Bloqueado" : CR.primerNombre(c.nombre))}</b><span>${E(c.estado === "bloqueo" ? c.notas || "" : CR.nombresServicios(c.servicios))}</span>${c.estado === "no-asistio" ? "<span>No asistió</span>" : ""}</button>`;
+      }).join("");
+      return `<div class="colm" style="height:${alto}px">${lineas}${cerr}${ahora}${evs}</div>`;
+    }).join("");
+    const lista = delDia.slice().sort((a, b) => (a.hora > b.hora ? 1 : -1));
+    $("#view").innerHTML = `
+      <div class="head"><div><h1>Agenda</h1><p>${E(CR.fechaLarga(f))}${fest ? ` · ${E(fest)} (festivo, solo mañana)` : ""}${!bloques.length ? " · el salón no abre" : ""}</p></div>
+        <div class="daynav"><button class="btn ghost sm" id="prev" type="button" aria-label="Día anterior">‹</button><input class="input" type="date" id="dia" value="${f}"><button class="btn ghost sm" id="next" type="button" aria-label="Día siguiente">›</button>
+        <button class="btn soft sm" id="hoyB" type="button">Hoy</button><button class="btn sm" id="add" type="button">+ Cita</button></div></div>
+      <div class="legend">${["pendiente", "confirmada", "atendida", "bloqueo"].map(chip).join("")}<span class="chip">${delDia.filter((c) => c.estado !== "bloqueo").length} citas</span></div>
+      <div class="cal"><div class="cal-in" style="grid-template-columns:56px repeat(${eq.length}, minmax(140px,1fr))">
+        <div class="cal-h"><div></div>${eq.map((m) => `<div>${E(m.nombre)}${CR.trabaja(m, f) ? "" : '<br><small class="muted">No trabaja</small>'}</div>`).join("")}</div>
+        <div class="hours" style="height:${alto}px">${horas}</div>${cols}</div></div>
+      <div class="card" style="margin-top:14px"><h3>Lista del día</h3><div class="list" style="margin-top:8px">${lista.map((c) => liCita(c)).join("") || `<div class="nothing">Sin citas este día.</div>`}</div></div>`;
+    $("#prev").onclick = () => { agendaFecha = CR.addDays(f, -1); vAgenda(); };
+    $("#next").onclick = () => { agendaFecha = CR.addDays(f, 1); vAgenda(); };
+    $("#hoyB").onclick = () => { agendaFecha = CR.hoy(); vAgenda(); };
+    $("#dia").onchange = (e) => { if (e.target.value) { agendaFecha = e.target.value; vAgenda(); } };
+    $("#add").onclick = () => { editando = { fecha: f }; ir("nueva"); };
+    enlazarCitas();
+  }
+
+  /* ---------- detalle de cita ---------- */
+  function abrir(html) {
+    const dr = $("#drawer"), sc = $("#scrim");
+    dr.innerHTML = html; sc.hidden = false; requestAnimationFrame(() => { sc.classList.add("on"); dr.classList.add("on"); });
+    dr.setAttribute("aria-hidden", "false"); sc.onclick = cerrar; $(".x", dr).onclick = cerrar; $(".x", dr).focus();
+  }
+  function cerrar() { const dr = $("#drawer"), sc = $("#scrim"); dr.classList.remove("on"); sc.classList.remove("on"); dr.setAttribute("aria-hidden", "true"); setTimeout(() => (sc.hidden = true), 220); }
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") cerrar(); });
+
+  function detalle(id) {
+    const c = D.citas.find((x) => x.id === id); if (!c) return;
+    const dz = c.diseno === "sencillo" ? "Un solo tono o francés" : c.diseno === "propio" ? "Referencia propia" : (CR.diseno(c.diseno) || {}).nombre;
+    const r = c.retiro ? CR.retiro(c.retiro) : null;
+    const msgConf = `Hola ${CR.primerNombre(c.nombre)}, te saluda ${N.nombre} ✨ Te confirmamos tu cita de ${CR.nombresServicios(c.servicios)} el ${CR.fechaLarga(c.fecha)} a las ${CR.hora12(c.hora)} con ${nombreM(c.staff)}. Te esperamos en ${N.direccion}, ${N.ciudad}.`;
+    const bloqueo = c.estado === "bloqueo";
+    abrir(`<header><div><span class="eyebrow">${bloqueo ? "Espacio bloqueado" : "Cita"}</span><h2>${E(bloqueo ? nombreM(c.staff) : c.nombre)}</h2><div style="margin-top:6px">${chip(c.estado)}</div></div><button class="x" type="button" aria-label="Cerrar">×</button></header>
+      <div class="body">
+        <dl class="kv">
+          <dt>Fecha</dt><dd>${E(CR.fechaLarga(c.fecha))}</dd>
+          <dt>Hora</dt><dd class="num">${CR.hora12(c.hora)} – ${CR.hora12(CR.toHHMM(CR.toMin(c.hora) + +c.min))}</dd>
+          ${bloqueo ? `<dt>Motivo</dt><dd>${E(c.notas || "—")}</dd>` : `
+          <dt>Servicio</dt><dd>${E(CR.nombresServicios(c.servicios))}</dd>
+          ${dz ? `<dt>Diseño</dt><dd>${E(dz)}${c.disenoNota ? `<br><span class="muted">${E(c.disenoNota)}</span>` : ""}</dd>` : ""}
+          ${r && r.precio ? `<dt>Retiro</dt><dd>${E(r.nombre)}</dd>` : ""}
+          <dt>Manicurista</dt><dd>${E(nombreM(c.staff))}</dd>
+          <dt>WhatsApp</dt><dd class="num">${E(c.telefono)}</dd>
+          <dt>Total</dt><dd class="num">${CR.money(c.total)}${c.estado === "atendida" ? ` · cobrado <b>${CR.money(c.cobrado || c.total)}</b>` : ""}</dd>
+          <dt>Abono</dt><dd class="num">${CR.money(c.abono)} · ${c.abonoPagado ? "recibido" : "pendiente"}</dd>
+          ${c.notas ? `<dt>Notas</dt><dd>${E(c.notas)}</dd>` : ""}
+          <dt>Origen</dt><dd>${c.origen === "panel" ? "Agregada en el panel" : "Sitio web"}</dd>`}
+        </dl>
+        <div id="accion"></div>
+        <div class="acts">
+          ${c.estado === "pendiente" ? `<button class="btn sm" data-a="abono" type="button">Confirmar abono recibido</button>` : ""}
+          ${["pendiente", "confirmada"].includes(c.estado) ? `<button class="btn sm ${c.estado === "pendiente" ? "ghost" : ""}" data-a="atendida" type="button">Marcar atendida</button>` : ""}
+          ${!bloqueo ? `<a class="btn wa sm" href="${CR.wa(c.telefono, msgConf)}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
+          <button class="btn ghost sm" data-a="editar" type="button">${bloqueo ? "Editar" : "Editar o reagendar"}</button>
+          ${["pendiente", "confirmada"].includes(c.estado) ? `<button class="btn ghost sm" data-a="noasistio" type="button">No asistió</button>` : ""}
+          ${c.estado !== "cancelada" ? `<button class="btn ghost sm" data-a="cancelar" type="button" style="color:var(--bad)">${bloqueo ? "Quitar bloqueo" : "Cancelar cita"}</button>` : `<button class="btn ghost sm" data-a="reactivar" type="button">Reactivar</button>`}
+          ${c.estado === "atendida" ? `<button class="btn ghost sm" data-a="atendida" type="button">Corregir valor cobrado</button>` : ""}
+        </div>
+      </div>`);
+    const dr = $("#drawer");
+    $$("[data-a]", dr).forEach((b) => (b.onclick = () => accion(c, b.dataset.a)));
+  }
+  async function guardar(c, forzar) {
+    await CR.api.guardarCita(c, PIN, forzar);
+    await cargar(); pintar();
+  }
+  function accion(c, a) {
+    const box = $("#accion");
+    if (a === "abono") return guardar({ ...c, estado: "confirmada", abonoPagado: true }).then(() => { toast("Abono confirmado"); detalle(c.id); }, err);
+    if (a === "editar") { cerrar(); editando = { ...c }; return ir("nueva"); }
+    if (a === "reactivar") return guardar({ ...c, estado: c.abonoPagado ? "confirmada" : "pendiente" }).then(() => { toast("Cita reactivada"); detalle(c.id); }, err);
+    if (a === "atendida") {
+      box.innerHTML = `<div class="confirm"><div class="field"><label for="cobrado">Valor total cobrado (incluye adicionales y abono)</label><input class="input num" id="cobrado" inputmode="numeric" value="${c.cobrado || c.total}"></div>
+        <div class="pills">${[0, 5000, 10000].map((x) => `<button class="pill" type="button" data-plus="${x}">${x ? "+" + CR.money(x) : "Sin adicional"}</button>`).join("")}</div>
+        <div class="acts"><button class="btn sm" id="okAt" type="button">Guardar como atendida</button></div></div>`;
+      $$("[data-plus]", box).forEach((p) => (p.onclick = () => ($("#cobrado").value = +c.total + +p.dataset.plus)));
+      $("#okAt").onclick = () => guardar({ ...c, estado: "atendida", abonoPagado: true, cobrado: +String($("#cobrado").value).replace(/\D/g, "") || c.total }).then(() => { toast("Cita atendida"); detalle(c.id); }, err);
+      return;
+    }
+    const txt = { cancelar: c.estado === "bloqueo" ? "¿Quitar este bloqueo de la agenda?" : `¿Cancelar la cita de ${CR.primerNombre(c.nombre)}? El horario queda libre.`, noasistio: "¿Marcar que la clienta no asistió?" }[a];
+    box.innerHTML = `<div class="confirm"><p>${E(txt)}</p><div class="acts"><button class="btn sm" id="si" type="button">Sí, confirmar</button><button class="btn ghost sm" id="no" type="button">Volver</button></div></div>`;
+    $("#no").onclick = () => (box.innerHTML = "");
+    $("#si").onclick = () => guardar({ ...c, estado: a === "cancelar" ? "cancelada" : "no-asistio" }).then(() => { toast(a === "cancelar" ? "Listo, horario liberado" : "Marcada como no asistió"); cerrar(); }, err);
+  }
+  const err = (e) => toast(e && e.message ? e.message : "No se pudo guardar");
+
+  /* ---------- nueva / editar cita ---------- */
+  let editando = null;
+  function vNueva() {
+    const base = editando || {};
+    const F = { tipo: base.estado === "bloqueo" ? "bloqueo" : "cita", nombre: base.nombre || "", telefono: base.telefono || "", servicios: (base.servicios || []).slice(), retiro: base.retiro || "", diseno: base.diseno || "",
+      disenoNota: base.disenoNota || "", staff: base.staff || (CR.cat.equipo.find((m) => m.activa !== false) || {}).id, fecha: base.fecha || CR.hoy(), hora: base.hora || "", notas: base.notas || "",
+      abonoPagado: base.abonoPagado != null ? !!base.abonoPagado : true, minBloqueo: base.estado === "bloqueo" ? base.min : 60 };
+    const esEdit = !!base.id;
+    const eq = CR.cat.equipo.filter((m) => m.activa !== false);
+    $("#view").innerHTML = `<div class="head"><div><h1>${esEdit ? (F.tipo === "bloqueo" ? "Editar bloqueo" : "Editar o reagendar cita") : "Agregar cita"}</h1><p>${esEdit ? "Cambia lo que necesites y guarda." : "Para clientas que agendan por WhatsApp, llamada o en el local."}</p></div>
+      ${esEdit ? "" : `<div class="seg" role="group"><button type="button" data-tipo="cita" aria-pressed="${F.tipo === "cita"}">Cita</button><button type="button" data-tipo="bloqueo" aria-pressed="${F.tipo === "bloqueo"}">Bloquear espacio</button></div>`}</div>
+      <div class="card"><div class="form" id="fx"></div><div class="formfoot"><span id="fxMsg" class="muted" style="flex:1"></span>${esEdit ? `<button class="btn ghost" id="cancel" type="button">Volver</button>` : ""}<button class="btn" id="save" type="button">Guardar</button></div></div>`;
+    $$("[data-tipo]").forEach((b) => (b.onclick = () => { F.tipo = b.dataset.tipo; $$("[data-tipo]").forEach((x) => x.setAttribute("aria-pressed", x === b)); form(); }));
+    if (esEdit) $("#cancel").onclick = () => { editando = null; ir("agenda"); };
+    const llevaUnas = () => F.servicios.some((id) => (CR.servicio(id) || {}).cat === "Uñas");
+    const dur = () => (F.tipo === "bloqueo" ? +F.minBloqueo : CR.calcular(F.servicios, llevaUnas() ? F.retiro : "").min);
+
+    function form() {
+      const fx = $("#fx");
+      const comunes = `
+        <div class="field"><label for="xStaff">Manicurista</label><select class="input" id="xStaff">${eq.map((m) => `<option value="${m.id}" ${F.staff === m.id ? "selected" : ""}>${E(m.nombre)}</option>`).join("")}</select></div>
+        <div class="field"><label for="xFecha">Fecha</label><input class="input" type="date" id="xFecha" value="${F.fecha}"></div>
+        <div class="field full"><label>Hora de inicio <span id="xDur"></span></label><div class="slotsel" id="xSlots"></div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:6px"><span class="muted" style="font-size:13px">u otra hora:</span><input class="input num" type="time" id="xHora" value="${F.hora}" style="width:auto" step="300"></div></div>`;
+      if (F.tipo === "bloqueo") {
+        fx.innerHTML = comunes + `<div class="field"><label for="xMin">Duración</label><select class="input" id="xMin">${[30, 60, 90, 120, 180, 240, 540].map((m) => `<option value="${m}" ${+F.minBloqueo === m ? "selected" : ""}>${m === 540 ? "Todo el día" : CR.dur(m)}</option>`).join("")}</select></div>
+          <div class="field"><label for="xNotas">Motivo</label><input class="input" id="xNotas" value="${E(F.notas)}" placeholder="Permiso, capacitación, cita médica…"></div>`;
+      } else {
+        const lista = CL.slice().sort((a, b) => (a.nombre > b.nombre ? 1 : -1));
+        fx.innerHTML = `
+          <div class="field"><label for="xNombre">Nombre de la clienta</label><input class="input" id="xNombre" list="xLista" value="${E(F.nombre)}" autocomplete="off" placeholder="Escribe para buscar clientas guardadas">
+            <datalist id="xLista">${lista.map((k) => `<option value="${E(k.nombre)}">${E(k.telefono)}</option>`).join("")}</datalist></div>
+          <div class="field"><label for="xTel">WhatsApp</label><input class="input num" id="xTel" inputmode="tel" value="${E(F.telefono)}" placeholder="10 dígitos"></div>
+          <div class="field full"><label>Servicios</label><div class="pills">${CR.cat.servicios.filter((s) => s.activo !== false || F.servicios.includes(s.id)).map((s) => `<button type="button" class="pill" data-s="${s.id}" aria-pressed="${F.servicios.includes(s.id)}">${E(s.nombre)} · ${CR.money(s.precio)}</button>`).join("")}</div></div>
+          <div class="field"><label for="xRet">Retiro</label><select class="input" id="xRet">${CR.cat.retiros.map((r) => `<option value="${r.id}" ${F.retiro === r.id ? "selected" : ""}>${E(r.nombre)}${r.precio ? " · " + CR.money(r.precio) : ""}</option>`).join("")}</select></div>
+          <div class="field"><label for="xDis">Diseño</label><select class="input" id="xDis"><option value="">Sin diseño definido</option><option value="sencillo" ${F.diseno === "sencillo" ? "selected" : ""}>Un solo tono o francés</option>
+            ${CR.cat.disenos.map((d) => `<option value="${d.id}" ${F.diseno === d.id ? "selected" : ""}>${E(d.nombre)}</option>`).join("")}<option value="propio" ${F.diseno === "propio" ? "selected" : ""}>Referencia propia</option></select></div>
+          ${comunes}
+          <div class="field"><label for="xAbono">Abono del ${N.abonoPct}%</label><select class="input" id="xAbono"><option value="1" ${F.abonoPagado ? "selected" : ""}>Ya lo pagó (cita confirmada)</option><option value="0" ${!F.abonoPagado ? "selected" : ""}>Pendiente</option></select></div>
+          <div class="field"><label for="xNotas">Notas</label><input class="input" id="xNotas" value="${E(F.notas)}" placeholder="Opcional"></div>
+          <div class="full" id="xTotal"></div>`;
+        $("#xNombre").oninput = (e) => { F.nombre = e.target.value; const k = CL.find((k) => k.nombre.toLowerCase() === F.nombre.trim().toLowerCase()); if (k && !F.telefono) { F.telefono = k.telefono; $("#xTel").value = k.telefono; } };
+        $("#xTel").oninput = (e) => (F.telefono = e.target.value);
+        $$("[data-s]").forEach((b) => (b.onclick = () => { const id = b.dataset.s; F.servicios = F.servicios.includes(id) ? F.servicios.filter((x) => x !== id) : [...F.servicios, id]; b.setAttribute("aria-pressed", F.servicios.includes(id)); slots(); total(); }));
+        $("#xRet").onchange = (e) => { F.retiro = e.target.value; slots(); total(); };
+        $("#xDis").onchange = (e) => (F.diseno = e.target.value);
+        $("#xAbono").onchange = (e) => (F.abonoPagado = e.target.value === "1");
+        total();
+      }
+      $("#xStaff").onchange = (e) => { F.staff = e.target.value; slots(); };
+      $("#xFecha").onchange = (e) => { F.fecha = e.target.value; slots(); };
+      $("#xHora").onchange = (e) => { F.hora = e.target.value; slots(); };
+      $("#xNotas").oninput = (e) => (F.notas = e.target.value);
+      const xm = $("#xMin"); if (xm) xm.onchange = (e) => { F.minBloqueo = +e.target.value; slots(); };
+      slots();
+    }
+    function total() {
+      const t = $("#xTotal"); if (!t) return; const c = CR.calcular(F.servicios, llevaUnas() ? F.retiro : "");
+      t.innerHTML = F.servicios.length ? `<div class="note" style="background:var(--linen);padding:10px 14px;border-radius:10px">Total ${CR.money(c.precio)} · abono ${CR.money(c.abono)} · duración ${CR.dur(c.min)}</div>` : "";
+    }
+    function slots() {
+      const d = dur(), oc = D.citas.filter((c) => CR.ACTIVAS.includes(c.estado));
+      $("#xDur").textContent = d ? `· dura ${CR.dur(d)}` : "";
+      if (!d) { $("#xSlots").innerHTML = `<span class="muted" style="font-size:13px">Elige los servicios para ver las horas libres.</span>`; return; }
+      const lista = CR.horarios(F.fecha, d, oc, { admin: true, ignorarId: base.id });
+      $("#xSlots").innerHTML = lista.length ? lista.map((s) => `<button type="button" data-h="${s.hora}" aria-pressed="${F.hora === s.hora}" ${s.libres.includes(F.staff) ? "" : "disabled"}>${CR.hora12(s.hora)}</button>`).join("")
+        : `<span class="muted" style="font-size:13px">${CR.bloquesDelDia(F.fecha).length ? "No hay horas en las que alcance a terminar." : "El salón no abre este día."} Puedes poner otra hora manualmente.</span>`;
+      $$("#xSlots [data-h]").forEach((b) => (b.onclick = () => { F.hora = b.dataset.h; $("#xHora").value = F.hora; slots(); }));
+    }
+    form();
+
+    let forzar = false;
+    $("#save").onclick = async () => {
+      const msg = $("#fxMsg");
+      if (!F.hora) return (msg.textContent = "Elige la hora de inicio.");
+      const cita = { ...(base.id ? base : {}), fecha: F.fecha, hora: F.hora, staff: F.staff, min: dur(), notas: F.notas.trim(), origen: base.origen || "panel" };
+      if (F.tipo === "bloqueo") Object.assign(cita, { estado: "bloqueo", nombre: "", telefono: "", servicios: [], total: 0, abono: 0, abonoPagado: true });
+      else {
+        if (!F.nombre.trim()) return (msg.textContent = "Escribe el nombre de la clienta.");
+        if (CR.tel(F.telefono).length !== 10) return (msg.textContent = "El WhatsApp debe tener 10 dígitos.");
+        if (!F.servicios.length) return (msg.textContent = "Elige al menos un servicio.");
+        const c = CR.calcular(F.servicios, llevaUnas() ? F.retiro : "");
+        const est = base.estado && !["pendiente", "confirmada", "bloqueo"].includes(base.estado) ? base.estado : F.abonoPagado ? "confirmada" : "pendiente";
+        Object.assign(cita, { nombre: F.nombre.trim(), telefono: CR.tel(F.telefono), servicios: F.servicios, retiro: llevaUnas() ? F.retiro : "", diseno: F.diseno, disenoNota: F.disenoNota,
+          total: c.precio, abono: c.abono, abonoPagado: F.abonoPagado, estado: est });
+      }
+      $("#save").disabled = true;
+      try {
+        await CR.api.guardarCita(cita, PIN, forzar); await cargar();
+        toast(base.id ? "Cambios guardados" : F.tipo === "bloqueo" ? "Espacio bloqueado" : "Cita agregada");
+        agendaFecha = F.fecha; editando = null; ir("agenda");
+      } catch (e) {
+        $("#save").disabled = false;
+        if (e.code === "ocupado") { msg.innerHTML = `<span class="warnbox">${E(e.message)} Toca Guardar otra vez para agendarla de todas formas.</span>`; forzar = true; }
+        else msg.textContent = e.message || "No se pudo guardar.";
+      }
+    };
+  }
+
+  /* ---------- por renovar ---------- */
+  let filtroRen = "todas";
+  function msgRetoque(k) {
+    const s = (CR.servicio(k.retoque.servicio) || {}).nombre || "servicio", dias = CR.diffDays(k.retoque.desde, CR.hoy());
+    return `Hola ${CR.primerNombre(k.nombre)} 💅 Te saluda ${N.nombre}. Ya van ${dias} días desde tu ${s.toLowerCase()} y es buen momento para tu retoque. ¿Te agendamos? Puedes escoger tu hora aquí: ${linkAgenda()}`;
+  }
+  function vRenovar() {
+    const all = porRenovar();
+    const f = { todas: all, proximas: all.filter((k) => k.retoque.dias >= 0), vencidas: all.filter((k) => k.retoque.dias < 0), recordadas: all.filter((k) => k.recordada) }[filtroRen];
+    const cuando = (d) => (d > 1 ? `Le toca en ${d} días` : d === 1 ? "Le toca mañana" : d === 0 ? "Le toca hoy" : `Vencido hace ${-d} día${d === -1 ? "" : "s"}`);
+    $("#view").innerHTML = `<div class="head"><div><h1>Clientas por renovar</h1><p>Según la última visita y el tiempo recomendado de cada servicio (uñas 25 días, laminado 1 mes, lifting 2 meses, cejas en henna 15 días). No aparecen las que ya tienen cita.</p></div></div>
+      <div class="tools"><div class="seg" role="group">${[["todas", "Todas"], ["proximas", "Próximos 7 días"], ["vencidas", "Vencidas"], ["recordadas", "Ya recordadas"]].map(([k, t]) => `<button type="button" data-f="${k}" aria-pressed="${filtroRen === k}">${t}</button>`).join("")}</div></div>
+      <div class="ren">${f.map((k) => `<div class="card rc"><div class="top2"><div><b>${E(k.nombre)}</b><div class="muted num" style="font-size:13px">${E(k.telefono)}</div></div>
+        <span class="chip ${k.retoque.dias < 0 ? "bad" : k.retoque.dias <= 2 ? "warn" : "info"}">${cuando(k.retoque.dias)}</span></div>
+        <div style="font-size:14px">${E((CR.servicio(k.retoque.servicio) || {}).nombre || "")} · última visita ${CR.fechaCorta(k.retoque.desde)}</div>
+        <div class="acts"><a class="btn wa sm" href="${CR.wa(k.telefono, msgRetoque(k))}" target="_blank" rel="noopener" data-rec="${k.telefono}">Recordar por WhatsApp</a>
+        <button class="btn ghost sm" type="button" data-ag="${k.telefono}">Agendar</button>${k.recordada ? `<span class="chip ok">Recordada ${CR.fechaCorta(D.recordatorios[k.telefono])}</span>` : ""}</div></div>`).join("") || `<div class="card nothing" style="grid-column:1/-1;border-top:1px solid var(--line)">No hay clientas en esta lista.</div>`}</div>`;
+    $$("[data-f]").forEach((b) => (b.onclick = () => { filtroRen = b.dataset.f; vRenovar(); }));
+    $$("[data-rec]").forEach((a) => a.addEventListener("click", async () => { try { await CR.api.recordar(a.dataset.rec, PIN); D.recordatorios[a.dataset.rec] = CR.hoy(); setTimeout(pintar, 400); } catch (e) {} }));
+    $$("[data-ag]").forEach((b) => (b.onclick = () => { const k = CL.find((x) => x.telefono === b.dataset.ag); editando = { nombre: k.nombre, telefono: k.telefono, servicios: [k.retoque.servicio], staff: (k.citas.find((c) => c.estado === "atendida") || {}).staff }; ir("nueva"); }));
+  }
+
+  /* ---------- clientas ---------- */
+  let buscar = "";
+  function vClientas() {
+    const q = buscar.toLowerCase().trim();
+    const lista = CL.filter((k) => !q || k.nombre.toLowerCase().includes(q) || k.telefono.includes(q.replace(/\D/g, "") || "~")).sort((a, b) => ((b.ultima || b.primera) > (a.ultima || a.primera) ? 1 : -1));
+    $("#view").innerHTML = `<div class="head"><div><h1>Clientas</h1><p>${CL.length} clientas han agendado alguna vez.</p></div></div>
+      <div class="tools"><input class="input" id="q" placeholder="Buscar por nombre o número" value="${E(buscar)}"></div>
+      <div class="card tablewrap"><table><thead><tr><th>Clienta</th><th>WhatsApp</th><th class="r">Visitas</th><th>Última visita</th><th class="r">Ha gastado</th><th>Próximo retoque</th></tr></thead><tbody>
+      ${lista.map((k) => `<tr class="click" data-k="${k.telefono}"><td>${E(k.nombre)}</td><td class="num">${E(k.telefono)}</td><td class="r">${k.visitas}</td><td>${k.ultima ? CR.fechaCorta(k.ultima) : '<span class="muted">Sin visitas</span>'}</td>
+        <td class="r">${CR.money(k.gastado)}</td><td>${k.proxima ? `<span class="chip info">Cita ${CR.fechaCorta(k.proxima.fecha)}</span>` : k.retoque ? `<span class="chip ${k.retoque.dias < 0 ? "bad" : k.retoque.dias <= 7 ? "warn" : ""}">${CR.fechaCorta(k.retoque.vence)}</span>` : "—"}</td></tr>`).join("") || `<tr><td colspan="6" class="muted" style="text-align:center;padding:22px">No encontramos clientas con esa búsqueda.</td></tr>`}
+      </tbody></table></div>`;
+    const qi = $("#q"); qi.oninput = () => { buscar = qi.value; const pos = qi.selectionStart; vClientas(); const n = $("#q"); n.focus(); n.setSelectionRange(pos, pos); };
+    $$("[data-k]").forEach((r) => (r.onclick = () => ficha(r.dataset.k)));
+  }
+  function ficha(tel) {
+    const k = CL.find((x) => x.telefono === tel); if (!k) return;
+    abrir(`<header><div><span class="eyebrow">Clienta</span><h2>${E(k.nombre)}</h2><div class="muted num">${E(k.telefono)}</div></div><button class="x" type="button" aria-label="Cerrar">×</button></header>
+      <div class="body">
+        <dl class="kv"><dt>Visitas</dt><dd>${k.visitas}</dd><dt>Ha gastado</dt><dd class="num">${CR.money(k.gastado)}</dd><dt>Cliente desde</dt><dd>${CR.fechaCorta(k.primera)}</dd>
+          ${k.retoque ? `<dt>Retoque</dt><dd>${E((CR.servicio(k.retoque.servicio) || {}).nombre || "")} · ${CR.fechaCorta(k.retoque.vence)}</dd>` : ""}</dl>
+        <div class="acts"><a class="btn wa sm" href="${CR.wa(k.telefono, `Hola ${CR.primerNombre(k.nombre)}, te saluda ${N.nombre} ✨`)}" target="_blank" rel="noopener">WhatsApp</a><button class="btn ghost sm" id="agK" type="button">Agendar cita</button></div>
+        <div><span class="eyebrow">Historial</span><div class="list" style="margin-top:6px">${k.citas.map((c) => liCita(c, true)).join("")}</div></div>
+      </div>`);
+    $("#agK").onclick = () => { cerrar(); editando = { nombre: k.nombre, telefono: k.telefono }; ir("nueva"); };
+    enlazarCitas($("#drawer"));
+  }
+
+  /* ---------- promociones ---------- */
+  const P = { seg: "todas", texto: `Hola {nombre} ✨ En ${N.nombre} tenemos una promo para ti: ________. Válida hasta ________. Agenda tu cita aquí: {link}`, quitar: {}, enviados: {} };
+  function segmentar() {
+    const hoy = CR.hoy(), cat = (k, c) => k.citas.some((x) => x.estado === "atendida" && x.servicios.some((s) => (CR.servicio(s) || {}).cat === c));
+    return CL.filter((k) => ({
+      todas: true, unas: cat(k, "Uñas"), cejas: cat(k, "Cejas y pestañas"),
+      inactivas: k.ultima && CR.diffDays(k.ultima, hoy) > 45 && !k.proxima, renovar: !!(k.retoque && !k.proxima && k.retoque.dias <= 7)
+    })[P.seg]);
+  }
+  function vPromos() {
+    const lista = segmentar(), activos = lista.filter((k) => !P.quitar[k.telefono]);
+    const texto = (k) => P.texto.replaceAll("{nombre}", CR.primerNombre(k.nombre)).replaceAll("{link}", linkAgenda());
+    const enviados = activos.filter((k) => P.enviados[k.telefono]).length;
+    $("#view").innerHTML = `<div class="head"><div><h1>Promociones</h1><p>Escribe el mensaje, elige a quién va dirigido y envíalo uno a uno por WhatsApp. Cada mensaje sale con el nombre de la clienta.</p></div></div>
+      <div class="promo">
+        <div class="card"><h3>Mensaje</h3><div class="form" style="grid-template-columns:1fr">
+          <div class="field"><label for="pTexto">Usa {nombre} para el nombre y {link} para el enlace de agendamiento</label><textarea class="input" id="pTexto" rows="6">${E(P.texto)}</textarea></div>
+          <div class="field"><label>Enviar a</label><div class="pills">${[["todas", "Todas"], ["unas", "Clientas de uñas"], ["cejas", "Cejas y pestañas"], ["inactivas", "No vienen hace +45 días"], ["renovar", "Por renovar"]].map(([k, t]) => `<button type="button" class="pill" data-seg="${k}" aria-pressed="${P.seg === k}">${t}</button>`).join("")}</div></div>
+        </div><span class="eyebrow" style="padding:0 16px">Vista previa</span><div class="bubble" id="pPrev">${E(activos[0] ? texto(activos[0]) : P.texto)}</div>
+        <p class="sub" style="padding-bottom:16px">WhatsApp no permite enviar mensajes masivos automáticos sin la API paga de WhatsApp Business. Para una lista de difusión, copia los números y agrégalos en WhatsApp Business: solo reciben el mensaje las clientas que tengan guardado el número del salón.</p></div>
+        <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 16px;flex-wrap:wrap"><div><h3 style="padding:0;font-size:17px">${activos.length} destinatarias</h3><span class="muted" style="font-size:13px">${enviados} de ${activos.length} enviados</span></div>
+          <button class="btn ghost sm" id="pCopy" type="button">Copiar números</button></div>
+          <div>${lista.map((k) => `<div class="rcp"><input type="checkbox" data-q="${k.telefono}" ${P.quitar[k.telefono] ? "" : "checked"} aria-label="Incluir a ${E(k.nombre)}"><span>${E(k.nombre)}<small class="num">${E(k.telefono)}</small></span>
+            ${P.enviados[k.telefono] ? `<span class="chip ok">Enviado</span>` : `<a class="btn wa sm" href="${CR.wa(k.telefono, texto(k))}" target="_blank" rel="noopener" data-env="${k.telefono}" ${P.quitar[k.telefono] ? "hidden" : ""}>Enviar</a>`}</div>`).join("") || `<div class="nothing">No hay clientas en este grupo.</div>`}</div></div>
+      </div>`;
+    const ta = $("#pTexto"); ta.oninput = () => { P.texto = ta.value; $("#pPrev").textContent = activos[0] ? texto(activos[0]) : P.texto; $$("[data-env]").forEach((a) => { const k = CL.find((x) => x.telefono === a.dataset.env); a.href = CR.wa(k.telefono, texto(k)); }); };
+    $$("[data-seg]").forEach((b) => (b.onclick = () => { P.seg = b.dataset.seg; vPromos(); }));
+    $$("[data-q]").forEach((c) => (c.onchange = () => { P.quitar[c.dataset.q] = !c.checked; vPromos(); }));
+    $$("[data-env]").forEach((a) => a.addEventListener("click", () => { P.enviados[a.dataset.env] = true; setTimeout(vPromos, 300); }));
+    $("#pCopy").onclick = () => {
+      const t = activos.map((k) => "+57" + k.telefono).join("\n");
+      const ok = () => toast(`${activos.length} números copiados`);
+      if (navigator.clipboard) navigator.clipboard.writeText(t).then(ok, () => mostrar(t)); else mostrar(t);
+    };
+    const mostrar = (t) => abrir(`<header><h2>Números</h2><button class="x" type="button" aria-label="Cerrar">×</button></header><div class="body"><p class="muted">Selecciona y copia:</p><textarea class="input num" rows="14" readonly>${E(t)}</textarea></div>`);
+  }
+
+  /* ---------- servicios y equipo ---------- */
+  function vAjustes() {
+    let S = CR.cat.servicios.map((s) => ({ ...s })), Q = CR.cat.equipo.map((m) => ({ ...m, dias: (m.dias || []).slice() }));
+    const filaS = (s, i) => `<tr><td><input class="input" data-si="${i}" data-k="nombre" value="${E(s.nombre)}" aria-label="Nombre"></td>
+      <td><select class="input" data-si="${i}" data-k="cat" aria-label="Categoría">${["Uñas", "Cejas y pestañas"].map((c) => `<option ${s.cat === c ? "selected" : ""}>${c}</option>`).join("")}</select></td>
+      <td><input class="input num" data-si="${i}" data-k="precio" inputmode="numeric" value="${s.precio}" aria-label="Precio" style="width:100px"></td>
+      <td><input class="input num" data-si="${i}" data-k="min" inputmode="numeric" value="${s.min}" aria-label="Duración en minutos" style="width:76px"></td>
+      <td><input class="input num" data-si="${i}" data-k="ciclo" inputmode="numeric" value="${s.ciclo}" aria-label="Volver cada (días)" style="width:76px"></td>
+      <td style="text-align:center"><input type="checkbox" data-si="${i}" data-k="disenos" ${s.disenos ? "checked" : ""} aria-label="Escoge diseño"></td>
+      <td style="text-align:center"><input type="checkbox" data-si="${i}" data-k="activo" ${s.activo !== false ? "checked" : ""} aria-label="Visible en el sitio"></td></tr>`;
+    $("#view").innerHTML = `<div class="head"><div><h1>Servicios y equipo</h1><p>Lo que cambies aquí se refleja en el sitio de agendamiento.</p></div></div>
+      <div class="grid">
+        <div class="card"><h3>Servicios, precios y tiempos</h3><p class="sub">Duración en minutos. “Volver cada” son los días para el recordatorio de retoque.</p>
+          <div class="tablewrap" style="margin-top:8px"><table class="edit"><thead><tr><th>Servicio</th><th>Categoría</th><th>Precio</th><th>Minutos</th><th>Volver cada</th><th>Diseño</th><th>Visible</th></tr></thead><tbody id="sBody">${S.map(filaS).join("")}</tbody></table></div>
+          <div class="formfoot" style="padding-top:14px"><button class="btn ghost sm" id="sAdd" type="button">+ Servicio</button><button class="btn sm" id="sSave" type="button">Guardar servicios</button></div></div>
+        <div class="card"><h3>Equipo</h3><p class="sub">Días que trabaja cada una. Si una no viene un día puntual, bloquea su espacio desde “Nueva cita”.</p>
+          <div class="tablewrap" style="margin-top:8px"><table class="edit"><thead><tr><th>Nombre</th><th>Días</th><th>Activa</th></tr></thead><tbody>
+          ${Q.map((m, i) => `<tr><td><input class="input" data-qi="${i}" value="${E(m.nombre)}" aria-label="Nombre"></td><td><div class="days">${[1, 2, 3, 4, 5, 6, 0].map((d) => `<label><input type="checkbox" data-qd="${i}" value="${d}" ${m.dias.includes(d) ? "checked" : ""}>${CR.DIAS_C[d]}</label>`).join("")}</div></td>
+            <td style="text-align:center"><input type="checkbox" data-qa="${i}" ${m.activa !== false ? "checked" : ""} aria-label="Activa"></td></tr>`).join("")}</tbody></table></div>
+          <div class="formfoot" style="padding-top:14px"><button class="btn ghost sm" id="qAdd" type="button">+ Integrante</button><button class="btn sm" id="qSave" type="button">Guardar equipo</button></div></div>
+        <div class="card"><h3>Seguridad</h3><div class="form"><div class="field"><label for="nPin">Nuevo PIN (mínimo 4 números)</label><input class="input num" id="nPin" inputmode="numeric" type="password" autocomplete="new-password"></div>
+          <div class="field" style="align-self:end"><button class="btn sm" id="pinSave" type="button" style="justify-self:start">Cambiar PIN</button></div></div>
+          ${CR.demo ? `<div class="formfoot"><span class="muted" style="flex:1">Modo demostración: puedes volver a los datos de ejemplo cuando quieras.</span><button class="btn ghost sm" id="reset" type="button">Restaurar datos de ejemplo</button></div>` : ""}</div>
+      </div>`;
+    const bindS = () => $$("[data-si]").forEach((el) => (el.onchange = () => { const s = S[+el.dataset.si], k = el.dataset.k; s[k] = el.type === "checkbox" ? el.checked : ["precio", "min", "ciclo"].includes(k) ? +String(el.value).replace(/\D/g, "") : el.value; }));
+    bindS();
+    $("#sAdd").onclick = () => { S.push({ id: "s-" + CR.uid(), nombre: "Nuevo servicio", cat: "Uñas", precio: 0, min: 60, ciclo: 25, disenos: false, activo: true, nota: "", foto: "" }); $("#sBody").insertAdjacentHTML("beforeend", filaS(S[S.length - 1], S.length - 1)); bindS(); };
+    $("#sSave").onclick = async () => { try { await CR.api.guardarCatalogo({ servicios: S }, PIN); CR.cat.servicios = S; toast("Servicios guardados"); } catch (e) { err(e); } };
+    $$("[data-qi]").forEach((el) => (el.onchange = () => (Q[+el.dataset.qi].nombre = el.value)));
+    $$("[data-qa]").forEach((el) => (el.onchange = () => (Q[+el.dataset.qa].activa = el.checked)));
+    $$("[data-qd]").forEach((el) => (el.onchange = () => { const m = Q[+el.dataset.qd], d = +el.value; m.dias = el.checked ? [...new Set([...m.dias, d])] : m.dias.filter((x) => x !== d); }));
+    $("#qAdd").onclick = () => { Q.push({ id: "m-" + CR.uid(), nombre: "Nueva integrante", dias: [1, 2, 3, 4, 5, 6], activa: true }); CR.cat.equipo = Q; vAjustes(); };
+    $("#qSave").onclick = async () => { try { await CR.api.guardarCatalogo({ equipo: Q }, PIN); CR.cat.equipo = Q; toast("Equipo guardado"); } catch (e) { err(e); } };
+    $("#pinSave").onclick = async () => { const v = $("#nPin").value.trim(); if (!/^\d{4,}$/.test(v)) return toast("El PIN debe tener mínimo 4 números"); try { await CR.api.cambiarPin(v, PIN); PIN = v; ses.set(v); $("#nPin").value = ""; toast("PIN actualizado"); } catch (e) { err(e); } };
+    const rs = $("#reset"); if (rs) rs.onclick = async () => { await CR.api.reiniciarDemo(); CR.cat.servicios = C.servicios.map((s) => ({ activo: true, ...s })); CR.cat.equipo = C.equipo; await cargar(); pintar(); toast("Datos de ejemplo restaurados"); };
+  }
+
+  /* ---------- inicio ---------- */
+  const guardado = ses.get();
+  if (guardado) CR.api.login(guardado).then(() => { PIN = guardado; arrancar(); }, () => {});
+})();
+</script>
+</body>
+</html>
