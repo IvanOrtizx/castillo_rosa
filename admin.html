@@ -203,7 +203,7 @@
   const chip = (e) => { const [t, k] = ESTADOS[e] || [e, ""]; return `<span class="chip ${k}">${t}</span>`; };
   const toast = (t) => { const e = $("#toast"); e.textContent = t; e.classList.add("show"); clearTimeout(e._t); e._t = setTimeout(() => e.classList.remove("show"), 2600); };
   const linkAgenda = () => location.href.replace(/admin\.html.*$/, "").replace(/[?#].*$/, "");
-  const nombreM = (id) => (CR.miembro(id) || { nombre: "—" }).nombre;
+  const nombreM = (id) => (CR.miembro(id) || { nombre: "Ya no está en el equipo" }).nombre;
   const ses = { get() { try { return sessionStorage.getItem("cr_pin") || ""; } catch (e) { return ""; } }, set(v) { try { sessionStorage.setItem("cr_pin", v); } catch (e) {} } };
 
   $("#demoBar").hidden = !CR.demo;
@@ -318,14 +318,15 @@
     const f = agendaFecha, bloques = CR.bloquesDelDia(f), fest = CR.festivo(f);
     const eq = CR.cat.equipo.filter((m) => m.activa !== false);
     const delDia = D.citas.filter((c) => c.fecha === f && c.estado !== "cancelada");
-    const ini = 9 * 60, fin = 18 * 60, PX = 1.15, alto = (fin - ini) * PX;
+    const finCitas = Math.max(0, ...delDia.map((c) => CR.toMin(c.hora) + +c.min));
+    const ini = 9 * 60, fin = Math.max(18 * 60, Math.ceil(finCitas / 60) * 60), PX = 1.15, alto = (fin - ini) * PX, hFin = fin / 60;
     const y = (m) => (m - ini) * PX;
-    let horas = ""; for (let h = 9; h <= 18; h++) horas += `<span style="top:${y(h * 60)}px">${h <= 12 ? h : h - 12}${h < 12 ? " am" : " pm"}</span>`;
-    let lineas = ""; for (let h = 9; h <= 18; h++) lineas += `<div class="hl" style="top:${y(h * 60)}px"></div>`;
+    let horas = ""; for (let h = 9; h <= hFin; h++) horas += `<span style="top:${y(h * 60)}px">${h <= 12 ? h : h - 12}${h < 12 ? " am" : " pm"}</span>`;
+    let lineas = ""; for (let h = 9; h <= hFin; h++) lineas += `<div class="hl" style="top:${y(h * 60)}px"></div>`;
     // franjas cerradas
     let cerr = ""; let cur = ini;
     bloques.forEach(([a, b]) => { if (a > cur) cerr += `<div class="closed" style="top:${y(cur)}px;height:${(a - cur) * PX}px">${cur >= 720 && a <= 840 ? "Almuerzo" : "Cerrado"}</div>`; cur = b; });
-    if (cur < fin) cerr += `<div class="closed" style="top:${y(cur)}px;height:${(fin - cur) * PX}px">${bloques.length ? (cur === 720 ? "Festivo · cerrado" : "Cerrado") : "Cerrado"}</div>`;
+    if (cur < fin) cerr += `<div class="closed" style="top:${y(cur)}px;height:${(fin - cur) * PX}px">${bloques.length ? (cur === 720 ? "Festivo · cerrado" : "Después del cierre") : "Cerrado"}</div>`;
     const ahora = f === CR.hoy() && CR.ahoraMin() > ini && CR.ahoraMin() < fin ? `<div class="now" style="top:${y(CR.ahoraMin())}px"></div>` : "";
     const cols = eq.map((m) => {
       const evs = delDia.filter((c) => c.staff === m.id).map((c) => {
@@ -622,11 +623,7 @@
         <div class="card"><h3>Servicios, precios y tiempos</h3><p class="sub">Duración en minutos. “Volver cada” son los días para el recordatorio de retoque.</p>
           <div class="tablewrap" style="margin-top:8px"><table class="edit"><thead><tr><th>Servicio</th><th>Categoría</th><th>Precio</th><th>Minutos</th><th>Volver cada</th><th>Diseño</th><th>Visible</th></tr></thead><tbody id="sBody">${S.map(filaS).join("")}</tbody></table></div>
           <div class="formfoot" style="padding-top:14px"><button class="btn ghost sm" id="sAdd" type="button">+ Servicio</button><button class="btn sm" id="sSave" type="button">Guardar servicios</button></div></div>
-        <div class="card"><h3>Equipo</h3><p class="sub">Días que trabaja cada una. Si una no viene un día puntual, bloquea su espacio desde “Nueva cita”.</p>
-          <div class="tablewrap" style="margin-top:8px"><table class="edit"><thead><tr><th>Nombre</th><th>Días</th><th>Activa</th></tr></thead><tbody>
-          ${Q.map((m, i) => `<tr><td><input class="input" data-qi="${i}" value="${E(m.nombre)}" aria-label="Nombre"></td><td><div class="days">${[1, 2, 3, 4, 5, 6, 0].map((d) => `<label><input type="checkbox" data-qd="${i}" value="${d}" ${m.dias.includes(d) ? "checked" : ""}>${CR.DIAS_C[d]}</label>`).join("")}</div></td>
-            <td style="text-align:center"><input type="checkbox" data-qa="${i}" ${m.activa !== false ? "checked" : ""} aria-label="Activa"></td></tr>`).join("")}</tbody></table></div>
-          <div class="formfoot" style="padding-top:14px"><button class="btn ghost sm" id="qAdd" type="button">+ Integrante</button><button class="btn sm" id="qSave" type="button">Guardar equipo</button></div></div>
+        <div class="card" id="eqCard"></div>
         <div class="card"><h3>Seguridad</h3><div class="form"><div class="field"><label for="nPin">Nuevo PIN (mínimo 4 números)</label><input class="input num" id="nPin" inputmode="numeric" type="password" autocomplete="new-password"></div>
           <div class="field" style="align-self:end"><button class="btn sm" id="pinSave" type="button" style="justify-self:start">Cambiar PIN</button></div></div>
           ${CR.demo ? `<div class="formfoot"><span class="muted" style="flex:1">Modo demostración: puedes volver a los datos de ejemplo cuando quieras.</span><button class="btn ghost sm" id="reset" type="button">Restaurar datos de ejemplo</button></div>` : ""}</div>
@@ -635,11 +632,36 @@
     bindS();
     $("#sAdd").onclick = () => { S.push({ id: "s-" + CR.uid(), nombre: "Nuevo servicio", cat: "Uñas", precio: 0, min: 60, ciclo: 25, disenos: false, activo: true, nota: "", foto: "" }); $("#sBody").insertAdjacentHTML("beforeend", filaS(S[S.length - 1], S.length - 1)); bindS(); };
     $("#sSave").onclick = async () => { try { await CR.api.guardarCatalogo({ servicios: S }, PIN); CR.cat.servicios = S; toast("Servicios guardados"); } catch (e) { err(e); } };
-    $$("[data-qi]").forEach((el) => (el.onchange = () => (Q[+el.dataset.qi].nombre = el.value)));
-    $$("[data-qa]").forEach((el) => (el.onchange = () => (Q[+el.dataset.qa].activa = el.checked)));
-    $$("[data-qd]").forEach((el) => (el.onchange = () => { const m = Q[+el.dataset.qd], d = +el.value; m.dias = el.checked ? [...new Set([...m.dias, d])] : m.dias.filter((x) => x !== d); }));
-    $("#qAdd").onclick = () => { Q.push({ id: "m-" + CR.uid(), nombre: "Nueva integrante", dias: [1, 2, 3, 4, 5, 6], activa: true }); CR.cat.equipo = Q; vAjustes(); };
-    $("#qSave").onclick = async () => { try { await CR.api.guardarCatalogo({ equipo: Q }, PIN); CR.cat.equipo = Q; toast("Equipo guardado"); } catch (e) { err(e); } };
+    let borrar = null;
+    const futuras = (id) => D.citas.filter((c) => c.staff === id && c.fecha >= CR.hoy() && ["pendiente", "confirmada"].includes(c.estado));
+    const guardarEquipo = async (msg) => {
+      const lista = Q.map((m) => ({ ...m, nombre: m.nombre.trim() })).filter((m) => m.nombre);
+      if (!lista.length) return toast("Debe quedar al menos una integrante");
+      try { await CR.api.guardarCatalogo({ equipo: lista }, PIN); Q = lista; CR.cat.equipo = lista.map((m) => ({ ...m, dias: m.dias.slice() })); toast(msg || "Equipo guardado"); equipo(); } catch (e) { err(e); }
+    };
+    function equipo() {
+      const card = $("#eqCard");
+      card.innerHTML = `<h3>Equipo</h3><p class="sub">Agrega, edita o elimina manicuristas. Desmarca “Activa” si alguien sale un tiempo y quieres conservar su historial. Para un día puntual, bloquea su espacio desde “Nueva cita”.</p>
+        <div class="tablewrap" style="margin-top:8px"><table class="edit"><thead><tr><th>Nombre</th><th>Días que trabaja</th><th>Activa</th><th></th></tr></thead><tbody>
+        ${Q.map((m, i) => `<tr><td><input class="input" data-qi="${i}" value="${E(m.nombre)}" aria-label="Nombre" placeholder="Nombre y apellido"></td>
+          <td><div class="days">${[1, 2, 3, 4, 5, 6, 0].map((d) => `<label><input type="checkbox" data-qd="${i}" value="${d}" ${m.dias.includes(d) ? "checked" : ""}>${CR.DIAS_C[d]}</label>`).join("")}</div></td>
+          <td style="text-align:center"><input type="checkbox" data-qa="${i}" ${m.activa !== false ? "checked" : ""} aria-label="Activa"></td>
+          <td><button class="btn ghost sm" type="button" data-qx="${i}" style="color:var(--bad)">Eliminar</button></td></tr>
+          ${borrar === i ? `<tr><td colspan="4"><div class="confirm">${futuras(m.id).length
+            ? `<p>${E(m.nombre)} tiene ${futuras(m.id).length} cita${futuras(m.id).length > 1 ? "s" : ""} próxima${futuras(m.id).length > 1 ? "s" : ""}. Pásalas a otra manicurista desde la Agenda (Editar o reagendar) y luego podrás eliminarla. Mientras tanto puedes desmarcar “Activa” para que no le lleguen citas nuevas.</p><div class="acts"><button class="btn ghost sm" type="button" id="qNo">Entendido</button></div>`
+            : `<p>¿Eliminar a ${E(m.nombre)} del equipo? Ya no aparecerá en el sitio ni en la agenda. Sus citas pasadas se conservan.</p><div class="acts"><button class="btn sm" type="button" id="qSi">Sí, eliminar</button><button class="btn ghost sm" type="button" id="qNo">Volver</button></div>`}</div></td></tr>` : ""}`).join("")}
+        </tbody></table></div>
+        <div class="formfoot" style="padding-top:14px"><button class="btn ghost sm" id="qAdd" type="button">+ Agregar manicurista</button><button class="btn sm" id="qSave" type="button">Guardar equipo</button></div>`;
+      $$("[data-qi]", card).forEach((el) => (el.oninput = () => (Q[+el.dataset.qi].nombre = el.value)));
+      $$("[data-qa]", card).forEach((el) => (el.onchange = () => (Q[+el.dataset.qa].activa = el.checked)));
+      $$("[data-qd]", card).forEach((el) => (el.onchange = () => { const m = Q[+el.dataset.qd], d = +el.value; m.dias = el.checked ? [...new Set([...m.dias, d])] : m.dias.filter((x) => x !== d); }));
+      $$("[data-qx]", card).forEach((b) => (b.onclick = () => { borrar = +b.dataset.qx; equipo(); }));
+      const no = $("#qNo"); if (no) no.onclick = () => { borrar = null; equipo(); };
+      const si = $("#qSi"); if (si) si.onclick = () => { const n = Q[borrar].nombre; Q.splice(borrar, 1); borrar = null; guardarEquipo(`${n} eliminada del equipo`); };
+      $("#qAdd").onclick = () => { Q.push({ id: "m-" + CR.uid(), nombre: "", dias: [1, 2, 3, 4, 5, 6], activa: true }); borrar = null; equipo(); const ins = $$("[data-qi]", card); ins[ins.length - 1].focus(); };
+      $("#qSave").onclick = () => guardarEquipo();
+    }
+    equipo();
     $("#pinSave").onclick = async () => { const v = $("#nPin").value.trim(); if (!/^\d{4,}$/.test(v)) return toast("El PIN debe tener mínimo 4 números"); try { await CR.api.cambiarPin(v, PIN); PIN = v; ses.set(v); $("#nPin").value = ""; toast("PIN actualizado"); } catch (e) { err(e); } };
     const rs = $("#reset"); if (rs) rs.onclick = async () => { await CR.api.reiniciarDemo(); CR.cat.servicios = C.servicios.map((s) => ({ activo: true, ...s })); CR.cat.equipo = C.equipo; await cargar(); pintar(); toast("Datos de ejemplo restaurados"); };
   }

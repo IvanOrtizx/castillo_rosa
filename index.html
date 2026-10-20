@@ -163,7 +163,7 @@
     <div>
       <h4>Visítanos</h4>
       <p id="fDir"></p>
-      <p class="muted">Lunes a sábado de 9:00 a. m. a 6:00 p. m.<br>Almuerzo de 12:00 m. a 2:00 p. m.<br>Festivos: solo en la mañana.</p>
+      <p class="muted">Lunes a sábado de 9:00 a. m. a 6:00 p. m.<br>Almuerzo de 12:00 m. a 2:00 p. m.<br>Último turno: 5:30 p. m.<br>Festivos: solo en la mañana.</p>
     </div>
     <div>
       <h4>Antes de tu cita</h4>
@@ -294,7 +294,7 @@
     const dias = [];
     for (let i = 0; i <= C.horario.diasAdelante; i++) { const f = CR.addDays(CR.hoy(), i); dias.push(f); }
     if (!S.fecha) S.fecha = dias.find((f) => CR.bloquesDelDia(f).length && (f !== CR.hoy() || CR.horarios(f, c.min, []).length)) || dias[0];
-    $("#panel").innerHTML = `<div><h2 class="title">Fecha y hora</h2><p class="lead">Tu cita dura aprox. ${CR.dur(c.min)}. Solo mostramos horas en las que alcanzamos a terminar antes del almuerzo o del cierre.</p></div>
+    $("#panel").innerHTML = `<div><h2 class="title">Fecha y hora</h2><p class="lead">Tu cita dura aprox. ${CR.dur(c.min)}. En la mañana mostramos las horas en las que alcanzamos a terminar antes del almuerzo. En la tarde, el último turno es a las 5:30 p. m.</p></div>
       <div class="dates" id="dates" role="group" aria-label="Fechas">${dias.map((f) => {
         const d = CR.parse(f), cerrado = !CR.bloquesDelDia(f).length, fest = CR.festivo(f);
         return `<button type="button" class="date" data-f="${f}" aria-pressed="${S.fecha === f}" ${cerrado ? "disabled" : ""} aria-label="${CR.fechaLarga(f)}${fest ? ", festivo" : ""}">

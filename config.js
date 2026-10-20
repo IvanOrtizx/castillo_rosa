@@ -22,10 +22,14 @@ window.CR_CONFIG = {
   },
 
   /* Horario: lunes (1) a sábado (6). Domingo cerrado.
-     Festivos: solo jornada de la mañana. */
+     Festivos: solo jornada de la mañana.
+     Cada bloque es [abre, cierra, último turno opcional].
+     Con "último turno", la cita puede empezar hasta esa hora aunque
+     termine después del cierre. Sin él, la cita debe terminar antes
+     de que cierre el bloque (por ejemplo, antes del almuerzo). */
   horario: {
     dias: [1, 2, 3, 4, 5, 6],
-    bloques: [["09:00", "12:00"], ["14:00", "18:00"]],
+    bloques: [["09:00", "12:00"], ["14:00", "18:00", "17:30"]],
     bloquesFestivo: [["09:00", "12:00"]],
     paso: 15,              // minutos entre horas ofrecidas
     diasAdelante: 45,      // hasta cuántos días adelante se puede agendar

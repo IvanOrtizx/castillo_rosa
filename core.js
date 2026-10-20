@@ -58,7 +58,7 @@
   CR.bloquesDelDia = function (s) {
     const d = CR.parse(s);
     if (!C.horario.dias.includes(d.getDay())) return [];
-    return (CR.festivo(s) ? C.horario.bloquesFestivo : C.horario.bloques).map(([a, b]) => [CR.toMin(a), CR.toMin(b)]);
+    return (CR.festivo(s) ? C.horario.bloquesFestivo : C.horario.bloques).map(([a, b, u]) => [CR.toMin(a), CR.toMin(b), u ? CR.toMin(u) : null]);
   };
 
   /* ---------- catálogo (puede venir del servidor) ---------- */
@@ -91,8 +91,8 @@
     const equipo = CR.cat.equipo.filter((m) => CR.trabaja(m, fecha));
     const paso = C.horario.paso, out = [];
     const limite = fecha === CR.hoy() && !opts.admin ? CR.ahoraMin() + C.horario.minAnticipacion : -1;
-    bloques.forEach(([a, b]) => {
-      for (let t = a; t + durMin <= b; t += paso) {
+    bloques.forEach(([a, b, ultimo]) => {
+      for (let t = a; ultimo != null ? t <= ultimo : t + durMin <= b; t += paso) {
         if (t < limite) continue;
         const libres = equipo.filter((m) => CR.libre(ocupado, fecha, m.id, t, t + durMin, opts.ignorarId)).map((m) => m.id);
         out.push({ hora: CR.toHHMM(t), libres });
