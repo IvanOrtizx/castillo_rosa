@@ -6,7 +6,7 @@
    MODO DEMOSTRACIÓN y guarda los datos solo en este navegador.
    ========================================================== */
 window.CR_CONFIG = {
-  API_URL: "",
+  API_URL: "https://script.google.com/macros/s/AKfycbwry9O7c61oM190Ff-lcoU-hUupDExuFqCdLvFYqtSuW2xXqG88cJUaOO32iIF9bZdwEQ/exec",
 
   negocio: {
     nombre: "El Castillo Rosa",

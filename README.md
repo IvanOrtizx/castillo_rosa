@@ -1,8 +1,8 @@
 # El Castillo Rosa · Nails Studio — Demo
 
-Demostración del sitio de agendamiento. Funciona sin base de datos: las citas de prueba se guardan en el navegador de quien la abre.
+Sitio de agendamiento conectado a Google Sheets.
 
 - Sitio de clientas: `index.html`
-- Panel de administradora: `admin.html` · PIN **1234**
+- Panel de administradora: `admin.html`
 
 Hecho por [Camott](https://camott.com).
